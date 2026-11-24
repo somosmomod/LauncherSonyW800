@@ -1,0 +1,329 @@
+@import "tailwindcss";
+
+@theme {
+  --font-display: "Plus Jakarta Sans", system-ui, sans-serif;
+  --font-sans: "DM Sans", system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, monospace;
+}
+
+@layer base {
+  body {
+    font-family: var(--font-sans);
+    overscroll-behavior-y: contain;
+  }
+
+  h1, h2, h3, h4 {
+    font-family: var(--font-display);
+  }
+}
+
+/* Hyper-futuristic OLED HUD textures inside the Sony screen */
+.hyper-hud-grid {
+  background-image:
+    linear-gradient(to right, rgba(255, 115, 29, 0.07) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(255, 115, 29, 0.07) 1px, transparent 1px);
+  background-size: 16px 16px;
+}
+
+.lcd-scanlines {
+  background-image: repeating-linear-gradient(
+    to bottom,
+    rgba(255, 255, 255, 0.025) 0px,
+    rgba(255, 255, 255, 0.025) 1px,
+    rgba(0, 0, 0, 0.14) 1px,
+    rgba(0, 0, 0, 0.14) 2px
+  );
+}
+
+.hyper-glow-orange {
+  box-shadow:
+    0 0 18px rgba(255, 106, 0, 0.35),
+    inset 0 0 10px rgba(255, 136, 40, 0.18);
+}
+
+/* Photorealistic Sony Ericsson W800i Hardware Surface Materials */
+.w800-speaker-dots {
+  background-image: radial-gradient(circle, rgba(24, 26, 32, 0.78) 1px, transparent 1.25px);
+  background-size: 4.5px 4.5px;
+}
+
+.w800-terracotta-bezel {
+  background: linear-gradient(
+    145deg,
+    #f06724 0%,
+    #d44a0f 32%,
+    #b53706 68%,
+    #8c2603 100%
+  );
+  box-shadow:
+    0 34px 70px -16px rgba(10, 12, 18, 0.52),
+    0 14px 28px -8px rgba(10, 12, 18, 0.32),
+    inset 0 2px 3px rgba(255, 186, 140, 0.65),
+    inset 0 -3px 6px rgba(62, 14, 0, 0.6);
+}
+
+.w800-obsidian-bezel {
+  background: linear-gradient(
+    145deg,
+    #363942 0%,
+    #202229 38%,
+    #14151a 75%,
+    #0b0c0f 100%
+  );
+  box-shadow:
+    0 34px 70px -16px rgba(10, 12, 18, 0.58),
+    0 14px 28px -8px rgba(10, 12, 18, 0.36),
+    inset 0 2px 2px rgba(255, 255, 255, 0.22),
+    inset 0 -3px 6px rgba(0, 0, 0, 0.8);
+}
+
+.w800-silver-bezel {
+  background: linear-gradient(
+    145deg,
+    #e5e8ee 0%,
+    #c3c8d2 36%,
+    #9ea5b2 72%,
+    #7e8594 100%
+  );
+  box-shadow:
+    0 34px 70px -16px rgba(10, 12, 18, 0.48),
+    0 14px 28px -8px rgba(10, 12, 18, 0.28),
+    inset 0 2px 3px rgba(255, 255, 255, 0.9),
+    inset 0 -3px 6px rgba(45, 50, 62, 0.45);
+}
+
+.w800-ceramic-pearl {
+  background:
+    radial-gradient(120% 80% at 22% 8%, rgba(255, 255, 255, 0.92) 0%, rgba(255, 255, 255, 0) 52%),
+    linear-gradient(165deg, #f8f7f3 0%, #eeede6 45%, #dfddd3 88%, #d4d1c5 100%);
+  box-shadow:
+    inset 0 1px 2px rgba(255, 255, 255, 0.95),
+    inset 0 -2px 5px rgba(110, 104, 92, 0.22),
+    0 1px 2px rgba(0, 0, 0, 0.25);
+}
+
+.w800-ceramic-obsidian {
+  background:
+    radial-gradient(120% 80% at 22% 8%, rgba(255, 255, 255, 0.08) 0%, rgba(255, 255, 255, 0) 52%),
+    linear-gradient(165deg, #272a32 0%, #1c1e24 48%, #131419 100%);
+  box-shadow:
+    inset 0 1px 1px rgba(255, 255, 255, 0.16),
+    inset 0 -2px 5px rgba(0, 0, 0, 0.65),
+    0 1px 2px rgba(0, 0, 0, 0.45);
+}
+
+.w800-ceramic-silver {
+  background:
+    radial-gradient(120% 80% at 22% 8%, rgba(255, 255, 255, 0.85) 0%, rgba(255, 255, 255, 0) 52%),
+    linear-gradient(165deg, #f0f2f6 0%, #dfe3ea 48%, #c7cdd8 100%);
+  box-shadow:
+    inset 0 1px 2px rgba(255, 255, 255, 0.92),
+    inset 0 -2px 5px rgba(72, 78, 92, 0.28),
+    0 1px 2px rgba(0, 0, 0, 0.25);
+}
+
+.w800-chrome-rim {
+  background: linear-gradient(180deg, #f8f9fb 0%, #c8cdd6 45%, #8f96a3 55%, #dde1e8 100%);
+  box-shadow:
+    0 1px 2px rgba(0, 0, 0, 0.35),
+    inset 0 1px 1px rgba(255, 255, 255, 0.9);
+}
+
+.w800-glass-lens {
+  background: linear-gradient(155deg, #2b2f38 0%, #12141a 40%, #090a0e 100%);
+  box-shadow:
+    inset 0 2px 6px rgba(0, 0, 0, 0.92),
+    inset 0 -1px 1px rgba(255, 255, 255, 0.15),
+    0 1px 0 rgba(255, 255, 255, 0.7);
+}
+
+.w800-key-tactile {
+  background: linear-gradient(180deg, #ffffff 0%, #f1efe8 65%, #e2dfd5 100%);
+  box-shadow:
+    0 2.5px 0 #b8b3a6,
+    0 3.5px 5px rgba(0, 0, 0, 0.18),
+    inset 0 1px 0.5px rgba(255, 255, 255, 0.95);
+}
+
+.w800-key-tactile:active,
+.w800-key-pressed {
+  transform: translateY(1.5px);
+  box-shadow:
+    0 0.5px 0 #b8b3a6,
+    0 1px 2px rgba(0, 0, 0, 0.16),
+    inset 0 1px 3px rgba(0, 0, 0, 0.16);
+}
+
+.w800-dark-key-tactile {
+  background: linear-gradient(180deg, #434752 0%, #2c2f37 55%, #1d1f25 100%);
+  box-shadow:
+    0 2.5px 0 #111216,
+    0 3.5px 5px rgba(0, 0, 0, 0.32),
+    inset 0 1px 0.5px rgba(255, 255, 255, 0.24);
+}
+
+.w800-dark-key-tactile:active,
+.w800-dark-key-pressed {
+  transform: translateY(1.5px);
+  box-shadow:
+    0 0.5px 0 #111216,
+    0 1px 2px rgba(0, 0, 0, 0.32),
+    inset 0 1px 3px rgba(0, 0, 0, 0.65);
+}
+
+.w800-joystick-dome {
+  background: radial-gradient(
+    circle at 35% 30%,
+    #ffc285 0%,
+    #ff7818 38%,
+    #d64404 78%,
+    #7d1e00 100%
+  );
+  box-shadow:
+    inset 0 1.5px 2px rgba(255, 255, 255, 0.65),
+    inset 0 -2px 3px rgba(60, 10, 0, 0.7),
+    0 2px 4px rgba(0, 0, 0, 0.45);
+}
+
+/* Smooth Low-Fi Sony Ericsson LCD Lateral Screen Transitions */
+@keyframes w800-slide-in-right {
+  0% {
+    transform: translate3d(100%, 0, 0);
+    filter: brightness(0.75);
+  }
+  100% {
+    transform: translate3d(0, 0, 0);
+    filter: brightness(1);
+  }
+}
+
+@keyframes w800-slide-out-left {
+  0% {
+    transform: translate3d(0, 0, 0);
+    opacity: 1;
+  }
+  100% {
+    transform: translate3d(-34%, 0, 0);
+    opacity: 0.22;
+  }
+}
+
+@keyframes w800-slide-in-left {
+  0% {
+    transform: translate3d(-100%, 0, 0);
+    filter: brightness(0.75);
+  }
+  100% {
+    transform: translate3d(0, 0, 0);
+    filter: brightness(1);
+  }
+}
+
+@keyframes w800-slide-out-right {
+  0% {
+    transform: translate3d(0, 0, 0);
+    opacity: 1;
+  }
+  100% {
+    transform: translate3d(34%, 0, 0);
+    opacity: 0.22;
+  }
+}
+
+@keyframes w800-widget-slide-right {
+  0% {
+    transform: translate3d(28%, 0, 0);
+    opacity: 0.35;
+  }
+  100% {
+    transform: translate3d(0, 0, 0);
+    opacity: 1;
+  }
+}
+
+@keyframes w800-widget-slide-left {
+  0% {
+    transform: translate3d(-28%, 0, 0);
+    opacity: 0.35;
+  }
+  100% {
+    transform: translate3d(0, 0, 0);
+    opacity: 1;
+  }
+}
+
+@keyframes w800-shade-drop {
+  0% {
+    transform: translate3d(0, -100%, 0);
+    opacity: 0.5;
+  }
+  100% {
+    transform: translate3d(0, 0, 0);
+    opacity: 1;
+  }
+}
+
+@keyframes w800-modal-rise {
+  0% {
+    transform: translate3d(0, 18%, 0);
+    opacity: 0;
+  }
+  100% {
+    transform: translate3d(0, 0, 0);
+    opacity: 1;
+  }
+}
+
+.w800-screen-in-right {
+  animation: w800-slide-in-right 210ms cubic-bezier(0.22, 0.9, 0.3, 1) forwards;
+  will-change: transform;
+}
+
+.w800-screen-out-left {
+  animation: w800-slide-out-left 210ms cubic-bezier(0.22, 0.9, 0.3, 1) forwards;
+  will-change: transform, opacity;
+}
+
+.w800-screen-in-left {
+  animation: w800-slide-in-left 210ms cubic-bezier(0.22, 0.9, 0.3, 1) forwards;
+  will-change: transform;
+}
+
+.w800-screen-out-right {
+  animation: w800-slide-out-right 210ms cubic-bezier(0.22, 0.9, 0.3, 1) forwards;
+  will-change: transform, opacity;
+}
+
+.w800-widget-in-right {
+  animation: w800-widget-slide-right 180ms cubic-bezier(0.22, 0.9, 0.3, 1) forwards;
+  will-change: transform, opacity;
+}
+
+.w800-widget-in-left {
+  animation: w800-widget-slide-left 180ms cubic-bezier(0.22, 0.9, 0.3, 1) forwards;
+  will-change: transform, opacity;
+}
+
+.w800-shade-drop {
+  animation: w800-shade-drop 200ms cubic-bezier(0.22, 0.9, 0.3, 1) forwards;
+  will-change: transform, opacity;
+}
+
+.w800-modal-rise {
+  animation: w800-modal-rise 180ms cubic-bezier(0.22, 0.9, 0.3, 1) forwards;
+  will-change: transform, opacity;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .w800-screen-in-right,
+  .w800-screen-out-left,
+  .w800-screen-in-left,
+  .w800-screen-out-right,
+  .w800-widget-in-right,
+  .w800-widget-in-left,
+  .w800-shade-drop,
+  .w800-modal-rise {
+    animation: none;
+  }
+}
+

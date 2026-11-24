@@ -1,0 +1,85 @@
+name: Compilar APK Android Nativo (W800i Launcher)
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main, master]
+    tags:
+      - 'v*'
+
+permissions:
+  contents: write
+
+jobs:
+  build-android-apk:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Descargar codigo
+        uses: actions/checkout@v4
+
+      - name: Configurar Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Configurar Java JDK 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      - name: Instalar dependencias y compilar web
+        run: |
+          npm install
+          npm run build
+
+      - name: Preparar proyecto Android Nativo con Capacitor
+        run: |
+          npm install @capacitor/core @capacitor/cli @capacitor/android
+          if [ ! -d android ]; then
+            npx cap add android
+          fi
+          mkdir -p android/app/src/main/java/com/walkman/w800i android/app/src/main/res/xml
+          cp -f android-native/app/src/main/AndroidManifest.xml android/app/src/main/AndroidManifest.xml
+          cp -f android-native/app/src/main/res/xml/file_paths.xml android/app/src/main/res/xml/file_paths.xml
+          cp -f android-native/app/src/main/java/com/walkman/w800i/*.java android/app/src/main/java/com/walkman/w800i/
+          BUILD_NUM="${{ github.run_number }}"
+          sed -i "s/versionCode [0-9]*/versionCode ${BUILD_NUM}/g" android/app/build.gradle
+          sed -i "s/versionName \"[^\"]*\"/versionName \"2.5.${BUILD_NUM}\"/g" android/app/build.gradle
+          npx cap sync android
+
+      - name: Compilar APK Debug Nativo
+        working-directory: android
+        run: |
+          chmod +x gradlew
+          ./gradlew assembleDebug
+
+      - name: Preparar APK para distribucion
+        run: |
+          cp android/app/build/outputs/apk/debug/app-debug.apk w800i-walkman-launcher.apk
+
+      - name: Subir APK descargable en Actions
+        uses: actions/upload-artifact@v4
+        with:
+          name: w800i-walkman-launcher-apk
+          path: w800i-walkman-launcher.apk
+
+      - name: Publicar Release en GitHub para instalar y actualizar desde la app
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          TAG_NAME="latest"
+          if [[ "${{ github.ref }}" == refs/tags/* ]]; then
+            TAG_NAME="${GITHUB_REF_NAME}"
+          fi
+          SHORT_SHA="${GITHUB_SHA::7}"
+          BUILD_NUM="${{ github.run_number }}"
+          NOTES="APK Nativo W800i Walkman Launcher v2.5.${BUILD_NUM} (${SHORT_SHA}) — Launcher predeterminado + iconos reales + auto-actualización."
+          if gh release view "${TAG_NAME}" >/dev/null 2>&1; then
+            gh release upload "${TAG_NAME}" w800i-walkman-launcher.apk --clobber
+            gh release edit "${TAG_NAME}" --title "W800i Walkman v2.5.${BUILD_NUM}" --notes "${NOTES}"
+          else
+            gh release create "${TAG_NAME}" w800i-walkman-launcher.apk \
+              --title "W800i Walkman v2.5.${BUILD_NUM}" \
+              --notes "${NOTES}"
+          fi

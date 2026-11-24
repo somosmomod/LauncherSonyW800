@@ -1,0 +1,6 @@
+{
+  "name": "W800i Walkman Launcher",
+  "description": "Launcher Android interactivo inspirado en el teléfono clásico Sony Ericsson W800i Walkman, con reproductor, marcador T9, accesos directos Android e importador de configuración.",
+  "requestFramePermissions": ["camera"],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
