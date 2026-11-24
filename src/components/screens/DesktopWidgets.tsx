@@ -241,7 +241,7 @@ export const DesktopWidgetHost: React.FC<DesktopWidgetHostProps> = ({
 
       return (
         <div
-          className={`relative rounded-xl border border-sky-400/35 bg-[#070A12]/90 backdrop-blur-sm flex flex-col justify-between ${
+          className={`relative rounded-xl border border-sky-400/35 bg-[#070A12]/90 backdrop-blur-sm min-h-0 overflow-hidden flex flex-col justify-between ${
             compact ? 'p-1.5' : 'p-2.5 h-full'
           }`}
         >
@@ -338,7 +338,7 @@ export const DesktopWidgetHost: React.FC<DesktopWidgetHostProps> = ({
       const info = describeWeatherCode(weather?.code ?? 0);
       return (
         <div
-          className={`relative rounded-xl border border-sky-400/40 bg-gradient-to-br from-[#070B14]/95 to-[#120B08]/95 backdrop-blur-sm flex flex-col justify-between ${
+          className={`relative rounded-xl border border-sky-400/40 bg-gradient-to-br from-[#070B14]/95 to-[#120B08]/95 backdrop-blur-sm min-h-0 overflow-hidden flex flex-col justify-between ${
             compact ? 'p-2' : 'p-3 h-full'
           }`}
         >
@@ -402,7 +402,7 @@ export const DesktopWidgetHost: React.FC<DesktopWidgetHostProps> = ({
       const pct = Math.min(100, (trackElapsed / Math.max(1, currentTrack.durationSec)) * 100);
       return (
         <div
-          className={`relative rounded-xl border border-[#FF731D]/45 bg-gradient-to-br from-[#140A05]/95 to-[#070910]/95 flex flex-col justify-between ${
+          className={`relative rounded-xl border border-[#FF731D]/45 bg-gradient-to-br from-[#140A05]/95 to-[#070910]/95 min-h-0 overflow-hidden flex flex-col justify-between ${
             compact ? 'p-2' : 'p-3 h-full'
           }`}
         >
@@ -468,7 +468,7 @@ export const DesktopWidgetHost: React.FC<DesktopWidgetHostProps> = ({
       const safeNote = notes[noteIdx % notes.length];
       return (
         <div
-          className={`relative rounded-xl border border-white/20 bg-[#080B13]/90 flex flex-col justify-between ${
+          className={`relative rounded-xl border border-white/20 bg-[#080B13]/90 min-h-0 overflow-hidden flex flex-col justify-between ${
             compact ? 'p-2' : 'p-3 h-full'
           }`}
         >
@@ -501,7 +501,7 @@ export const DesktopWidgetHost: React.FC<DesktopWidgetHostProps> = ({
     // 6. SYSTEM HARDWARE WIDGET
     return (
       <div
-        className={`relative rounded-xl border border-emerald-400/35 bg-[#070B12]/90 flex flex-col justify-between ${
+        className={`relative rounded-xl border border-emerald-400/35 bg-[#070B12]/90 min-h-0 overflow-hidden flex flex-col justify-between ${
           compact ? 'p-2' : 'p-3 h-full'
         }`}
       >

@@ -451,7 +451,7 @@ export const PhoneScreens: React.FC<PhoneScreenProps> = ({
 
   return (
     <div
-      className="relative flex flex-col w-full h-full overflow-hidden select-none font-sans bg-[#05060A] text-white"
+      className="relative flex flex-col w-full h-full min-h-0 overflow-hidden select-none font-sans bg-[#05060A] text-white"
       style={{ filter: `brightness(${controlCenter.brightness}%)` }}
     >
       {/* Interactive Top Sony Hyper-HUD Status Bar (Tap to pull down Notification & Control Center) */}
@@ -459,7 +459,7 @@ export const PhoneScreens: React.FC<PhoneScreenProps> = ({
         type="button"
         onClick={() => setShadeOpen((v) => !v)}
         aria-label="Abrir Centro de Notificaciones y Control Sony"
-        className="relative z-30 w-full flex items-center justify-between px-2.5 py-1.5 bg-[#090B12]/90 border-b border-white/10 text-[10px] font-mono tabular-nums hover:bg-white/5 transition-colors cursor-pointer"
+        className="relative z-30 shrink-0 w-full flex items-center justify-between px-2.5 py-1.5 bg-[#090B12]/90 border-b border-white/10 text-[10px] font-mono tabular-nums hover:bg-white/5 transition-colors cursor-pointer"
       >
         <div className="flex items-center gap-1.5">
           {/* Futuristic 5G Signal Bars */}
@@ -504,13 +504,13 @@ export const PhoneScreens: React.FC<PhoneScreenProps> = ({
       </button>
 
       {/* Main OLED Viewport with Low-Fi Lateral Screen Transitions */}
-      <div className="relative flex-1 overflow-hidden hyper-hud-grid">
+      <div className="relative flex-1 min-h-0 overflow-hidden hyper-hud-grid">
         {(() => {
           const renderScreenContent = (targetScreen: ScreenId, isExiting: boolean) => (
             <>
               {/* SCREEN: HYPER-FUTURISTIC STANDBY WITH DESKTOP WIDGETS & .hyper-hud-grid */}
               {targetScreen === 'standby' && (
-          <div className="relative flex flex-col justify-between w-full h-full p-2.5 bg-gradient-to-b from-[#060810]/85 via-[#090C16]/85 to-[#120A06]/90 hyper-hud-grid overflow-hidden">
+          <div className="relative flex flex-col justify-between w-full h-full min-h-0 p-2.5 bg-gradient-to-b from-[#060810]/85 via-[#090C16]/85 to-[#120A06]/90 hyper-hud-grid overflow-hidden">
             {/* Optional User Custom Wallpaper */}
             {config.customWallpaperUrl && (
               <>
@@ -594,8 +594,8 @@ export const PhoneScreens: React.FC<PhoneScreenProps> = ({
 
         {/* SCREEN: HYPER-FUTURISTIC CUSTOMIZABLE 12-ICON SONY MENU */}
         {targetScreen === 'menu' && (
-          <div className="flex flex-col w-full h-full bg-gradient-to-b from-[#070910] to-[#0D101B]">
-            <div className="px-2.5 py-1.5 bg-white/[0.04] border-b border-white/10 flex items-center justify-between">
+          <div className="flex flex-col w-full h-full min-h-0 overflow-hidden bg-gradient-to-b from-[#070910] to-[#0D101B]">
+            <div className="shrink-0 px-2.5 py-1.5 bg-white/[0.04] border-b border-white/10 flex items-center justify-between">
               <span className="text-[11px] font-bold tracking-tight truncate" style={{ color: config.accentColor || '#FF8C38' }}>
                 {(config.menuItems[menuIndex] || MAIN_MENU_ITEMS[menuIndex])?.label || 'Menú'}
               </span>
@@ -604,7 +604,7 @@ export const PhoneScreens: React.FC<PhoneScreenProps> = ({
                 {(config.menuItems.length || MAIN_MENU_ITEMS.length)}
               </span>
             </div>
-            <div className="grid grid-cols-3 grid-rows-4 gap-1.5 p-2 flex-1">
+            <div className="grid grid-cols-3 grid-rows-4 gap-1.5 p-2 flex-1 min-h-0 overflow-hidden">
               {(config.menuItems.length > 0
                 ? config.menuItems
                 : MAIN_MENU_ITEMS.map(
@@ -666,7 +666,7 @@ export const PhoneScreens: React.FC<PhoneScreenProps> = ({
 
         {/* SCREEN: HYPER-FUTURISTIC WALKMAN PLAYER */}
         {targetScreen === 'walkman' && (
-          <div className="relative flex flex-col justify-between w-full h-full bg-gradient-to-b from-[#080A12] via-[#130C08] to-[#260D02] p-3 overflow-hidden">
+          <div className="relative flex flex-col justify-between w-full h-full min-h-0 bg-gradient-to-b from-[#080A12] via-[#130C08] to-[#260D02] p-3 overflow-hidden">
             {/* Holographic Concentric Radar Rings */}
             <div
               className={`pointer-events-none absolute left-1/2 top-[43%] -translate-x-1/2 -translate-y-1/2 w-44 h-44 rounded-full border border-[#FF731D]/25 ${
@@ -748,12 +748,12 @@ export const PhoneScreens: React.FC<PhoneScreenProps> = ({
 
             {/* Playlist Modal ("More" softkey) */}
             {showPlaylistModal && (
-              <div className="w800-modal-rise absolute inset-0 z-20 bg-[#070910]/95 backdrop-blur-md text-white flex flex-col p-2.5">
-                <div className="text-[10px] font-bold text-[#FF8C38] pb-1.5 border-b border-white/15 flex items-center justify-between">
+              <div className="w800-modal-rise absolute inset-0 z-20 bg-[#070910]/95 backdrop-blur-md text-white flex flex-col p-2.5 overflow-hidden">
+                <div className="shrink-0 text-[10px] font-bold text-[#FF8C38] pb-1.5 border-b border-white/15 flex items-center justify-between">
                   <span>Cola Walkman ({totalTracks})</span>
                   <span className="font-mono text-[9px] text-sky-300">▲▼ Elegir</span>
                 </div>
-                <div className="flex-1 overflow-y-auto divide-y divide-white/10 mt-1">
+                <div className="flex-1 min-h-0 overflow-y-auto divide-y divide-white/10 mt-1">
                   {config.tracks.map((tr, idx) => {
                     const active = idx === trackIndex;
                     return (
@@ -781,8 +781,8 @@ export const PhoneScreens: React.FC<PhoneScreenProps> = ({
 
         {/* SCREEN: NOTIFICATIONS SONY HUB */}
         {targetScreen === 'notifications' && (
-          <div className="flex flex-col w-full h-full bg-[#070910] p-2.5">
-            <div className="flex items-center justify-between pb-1.5 border-b border-white/10">
+          <div className="flex flex-col w-full h-full min-h-0 overflow-hidden bg-[#070910] p-2.5">
+            <div className="shrink-0 flex items-center justify-between pb-1.5 border-b border-white/10">
               <span className="text-[10.5px] font-bold text-[#FF8C38]">
                 Notificaciones Sony ({notifications.length})
               </span>
@@ -794,7 +794,7 @@ export const PhoneScreens: React.FC<PhoneScreenProps> = ({
                 + Probar
               </button>
             </div>
-            <div className="flex-1 overflow-y-auto space-y-1.5 mt-2">
+            <div className="flex-1 min-h-0 overflow-y-auto space-y-1.5 mt-2">
               {notifications.length === 0 ? (
                 <div className="h-full flex flex-col items-center justify-center text-center px-3">
                   <Bell className="w-6 h-6 text-white/30 mb-1.5" />
@@ -837,8 +837,8 @@ export const PhoneScreens: React.FC<PhoneScreenProps> = ({
 
         {/* SCREEN: APPS ANDROID (LAUNCHER CON ICONOS REALES) */}
         {targetScreen === 'apps' && (
-          <div className="flex flex-col w-full h-full bg-[#070910]">
-            <div className="px-2.5 py-1.5 bg-white/[0.04] border-b border-white/10 flex items-center justify-between">
+          <div className="flex flex-col w-full h-full min-h-0 overflow-hidden bg-[#070910]">
+            <div className="shrink-0 px-2.5 py-1.5 bg-white/[0.04] border-b border-white/10 flex items-center justify-between">
               <span className="text-[10px] font-bold text-white">Apps Android ({config.apps.length})</span>
               {isNativeApk ? (
                 <button
@@ -853,7 +853,7 @@ export const PhoneScreens: React.FC<PhoneScreenProps> = ({
                 <span className="text-[9px] font-mono text-[#FF8C38]">1-9 Rápido</span>
               )}
             </div>
-            <div className="flex-1 overflow-y-auto divide-y divide-white/10 p-1">
+            <div className="flex-1 min-h-0 overflow-y-auto divide-y divide-white/10 p-1">
               {config.apps.map((app, idx) => {
                 const active = idx === selectedAppIndex;
                 return (
@@ -905,8 +905,8 @@ export const PhoneScreens: React.FC<PhoneScreenProps> = ({
 
         {/* SCREEN: DIALER */}
         {targetScreen === 'dialer' && (
-          <div className="flex flex-col justify-between w-full h-full bg-[#070910] p-2.5">
-            <div>
+          <div className="flex flex-col justify-between w-full h-full min-h-0 overflow-hidden bg-[#070910] p-2.5">
+            <div className="shrink-0">
               <div className="text-[9px] font-mono text-[#FF8C38] uppercase tracking-wider">
                 Marcador Neural DTMF
               </div>
@@ -927,7 +927,7 @@ export const PhoneScreens: React.FC<PhoneScreenProps> = ({
               </div>
             </div>
 
-            <div className="flex-1 mt-2 overflow-y-auto">
+            <div className="flex-1 min-h-0 mt-2 overflow-y-auto">
               <div className="text-[9px] font-mono text-white/55 mb-1">Registro reciente</div>
               {callLog.length === 0 ? (
                 <p className="text-[10px] text-white/50 py-4 text-center">
@@ -954,25 +954,25 @@ export const PhoneScreens: React.FC<PhoneScreenProps> = ({
 
         {/* SCREEN: MESSAGES T9 */}
         {targetScreen === 'messages' && (
-          <div className="flex flex-col w-full h-full bg-[#070910] p-2.5">
-            <div className="flex items-center justify-between pb-1 border-b border-white/10">
+          <div className="flex flex-col w-full h-full min-h-0 overflow-hidden bg-[#070910] p-2.5">
+            <div className="shrink-0 flex items-center justify-between pb-1 border-b border-white/10">
               <span className="text-[10px] font-bold text-[#FF8C38]">Mensaje T9</span>
               <span className="text-[8.5px] font-mono text-sky-300">{t9ActiveHint}</span>
             </div>
 
-            <div className="mt-1.5 text-[9.5px] flex items-center gap-1 bg-white/[0.05] px-2 py-1 rounded-lg border border-white/10">
+            <div className="shrink-0 mt-1.5 text-[9.5px] flex items-center gap-1 bg-white/[0.05] px-2 py-1 rounded-lg border border-white/10">
               <span className="text-white/55">Para:</span>
               <span className="font-semibold truncate text-white">
                 {config.contacts[smsRecipientIndex]?.name || 'Libre'}
               </span>
             </div>
 
-            <div className="mt-1.5 flex-1 rounded-xl bg-white/[0.05] border border-white/15 p-2 font-mono text-[10.5px] leading-snug break-words overflow-y-auto text-white">
+            <div className="mt-1.5 flex-1 min-h-0 rounded-xl bg-white/[0.05] border border-white/15 p-2 font-mono text-[10.5px] leading-snug break-words overflow-y-auto text-white">
               {smsText || <span className="text-white/40">Escribe con teclas 2-9 (0=espacio)...</span>}
               <span className="inline-block w-[6px] h-[11px] bg-[#FF8C38] ml-0.5 align-middle animate-pulse" />
             </div>
 
-            <div className="mt-1.5 flex items-center justify-between gap-1.5">
+            <div className="shrink-0 mt-1.5 flex items-center justify-between gap-1.5">
               <button
                 type="button"
                 onClick={() => onSendSms('sms')}
@@ -993,12 +993,12 @@ export const PhoneScreens: React.FC<PhoneScreenProps> = ({
 
         {/* SCREEN: CONTACTS */}
         {targetScreen === 'contacts' && (
-          <div className="flex flex-col w-full h-full bg-[#070910]">
-            <div className="px-2.5 py-1.5 bg-white/[0.04] border-b border-white/10 flex items-center justify-between">
+          <div className="flex flex-col w-full h-full min-h-0 overflow-hidden bg-[#070910]">
+            <div className="shrink-0 px-2.5 py-1.5 bg-white/[0.04] border-b border-white/10 flex items-center justify-between">
               <span className="text-[10px] font-bold text-white">Contactos ({config.contacts.length})</span>
               <span className="text-[9px] text-[#FF8C38]">Llamar</span>
             </div>
-            <div className="flex-1 overflow-y-auto divide-y divide-white/10 p-1">
+            <div className="flex-1 min-h-0 overflow-y-auto divide-y divide-white/10 p-1">
               {config.contacts.map((contact: ContactEntry, idx: number) => {
                 const active = idx === selectedContactIndex;
                 return (
@@ -1032,7 +1032,7 @@ export const PhoneScreens: React.FC<PhoneScreenProps> = ({
 
         {/* SCREEN: CAMERA */}
         {targetScreen === 'camera' && (
-          <div className="relative flex flex-col justify-between w-full h-full bg-[#05060A] text-white overflow-hidden">
+          <div className="relative flex flex-col justify-between w-full h-full min-h-0 bg-[#05060A] text-white overflow-hidden">
             {cameraStream && !isExiting ? (
               <video
                 ref={videoRef}
@@ -1073,28 +1073,28 @@ export const PhoneScreens: React.FC<PhoneScreenProps> = ({
 
         {/* SCREEN: GALLERY */}
         {targetScreen === 'gallery' && (
-          <div className="flex flex-col w-full h-full bg-[#070910] p-2">
-            <div className="flex items-center justify-between text-[10px] font-bold pb-1 border-b border-white/10">
+          <div className="flex flex-col w-full h-full min-h-0 overflow-hidden bg-[#070910] p-2">
+            <div className="shrink-0 flex items-center justify-between text-[10px] font-bold pb-1 border-b border-white/10">
               <span>Galería ({photos.length})</span>
               <span className="font-mono text-[9px] text-[#FF8C38]">
                 {photos.length > 0 ? `${selectedPhotoIndex + 1}/${photos.length}` : '0/0'}
               </span>
             </div>
             {photos.length === 0 ? (
-              <div className="flex-1 flex flex-col items-center justify-center text-center px-2">
+              <div className="flex-1 min-h-0 flex flex-col items-center justify-center text-center px-2">
                 <FolderOpen className="w-6 h-6 text-white/35 mb-1" />
                 <p className="text-[10px] text-white/65">Sin capturas todavía. Abre Cámara 2MP.</p>
               </div>
             ) : (
-              <div className="flex-1 flex flex-col mt-1.5 overflow-hidden">
-                <div className="flex-1 rounded-lg overflow-hidden bg-black flex items-center justify-center border border-white/10">
+              <div className="flex-1 min-h-0 flex flex-col mt-1.5 overflow-hidden">
+                <div className="flex-1 min-h-0 rounded-lg overflow-hidden bg-black flex items-center justify-center border border-white/10">
                   <img
                     src={photos[selectedPhotoIndex]?.dataUrl}
                     alt={photos[selectedPhotoIndex]?.label || 'Foto'}
                     className="w-full h-full object-cover"
                   />
                 </div>
-                <div className="mt-1 flex items-center justify-between text-[9px] text-white/80">
+                <div className="shrink-0 mt-1 flex items-center justify-between text-[9px] text-white/80">
                   <span className="truncate font-mono">{photos[selectedPhotoIndex]?.label}</span>
                 </div>
               </div>
@@ -1104,12 +1104,12 @@ export const PhoneScreens: React.FC<PhoneScreenProps> = ({
 
         {/* SCREEN: HYPER SNAKE */}
         {targetScreen === 'game' && (
-          <div className="flex flex-col w-full h-full bg-[#070910] p-2">
-            <div className="flex items-center justify-between text-[9.5px] font-mono pb-1">
+          <div className="flex flex-col w-full h-full min-h-0 overflow-hidden bg-[#070910] p-2">
+            <div className="shrink-0 flex items-center justify-between text-[9.5px] font-mono pb-1">
               <span className="font-bold text-[#FF8C38]">PTS: {snakeState.score}</span>
               <span className="text-sky-300">RÉCORD: {highScore}</span>
             </div>
-            <div className="relative flex-1 bg-white/[0.04] border border-white/15 rounded-xl overflow-hidden grid grid-cols-12 grid-rows-12">
+            <div className="relative flex-1 min-h-0 bg-white/[0.04] border border-white/15 rounded-xl overflow-hidden grid grid-cols-12 grid-rows-12">
               {Array.from({ length: 144 }).map((_, idx) => {
                 const x = idx % 12;
                 const y = Math.floor(idx / 12);
@@ -1151,7 +1151,7 @@ export const PhoneScreens: React.FC<PhoneScreenProps> = ({
 
         {/* SCREEN: RADIO FM */}
         {targetScreen === 'radio' && (
-          <div className="flex flex-col justify-between w-full h-full bg-[#070910] p-3">
+          <div className="flex flex-col justify-between w-full h-full min-h-0 overflow-hidden bg-[#070910] p-3">
             <div className="flex items-center justify-between text-[10px] font-mono">
               <span className="font-bold text-[#FF8C38]">FM RDS TUNER</span>
               <span className="text-sky-300">{fmPlaying ? 'ON AIR' : 'STANDBY'}</span>
@@ -1183,7 +1183,7 @@ export const PhoneScreens: React.FC<PhoneScreenProps> = ({
 
         {/* SCREEN: CALCULATOR */}
         {targetScreen === 'organizer' && (
-          <div className="flex flex-col justify-between w-full h-full bg-[#070910] p-2.5">
+          <div className="flex flex-col justify-between w-full h-full min-h-0 overflow-hidden bg-[#070910] p-2.5">
             <div>
               <div className="text-[9.5px] font-mono font-bold text-[#FF8C38]">CALCULO HUD</div>
               <div className="mt-1 rounded-xl bg-white/[0.06] border border-white/15 p-2 text-right font-mono">
@@ -1208,13 +1208,13 @@ export const PhoneScreens: React.FC<PhoneScreenProps> = ({
 
         {/* SCREEN: CENTRO DE CONFIGURACIÓN SONY (IN-PHONE) */}
         {targetScreen === 'settings' && (
-          <div className="flex flex-col w-full h-full bg-[#070910] p-2">
-            <div className="px-1 pb-1.5 border-b border-white/10 flex items-center justify-between">
+          <div className="flex flex-col w-full h-full min-h-0 overflow-hidden bg-[#070910] p-2">
+            <div className="shrink-0 px-1 pb-1.5 border-b border-white/10 flex items-center justify-between">
               <span className="text-[10.5px] font-bold text-[#FF8C38]">Centro de Configuración</span>
               <span className="text-[8.5px] font-mono text-sky-300">{APP_VERSION}</span>
             </div>
 
-            <div className="flex-1 overflow-y-auto space-y-1.5 mt-1.5 pr-0.5">
+            <div className="flex-1 min-h-0 overflow-y-auto space-y-1.5 mt-1.5 pr-0.5">
               {/* Native Android Home Launcher Control Card */}
               <div className="rounded-xl bg-white/[0.06] border border-sky-400/35 p-2 space-y-1.5">
                 <div className="flex items-center justify-between text-[9.5px]">
@@ -1412,7 +1412,7 @@ export const PhoneScreens: React.FC<PhoneScreenProps> = ({
                 <div
                   key={`exit-${exitingScreen}-${screen}`}
                   aria-hidden="true"
-                  className={`pointer-events-none absolute inset-0 z-0 ${
+                  className={`pointer-events-none absolute inset-0 z-0 overflow-hidden ${
                     transitionDir === 'back' ? 'w800-screen-out-right' : 'w800-screen-out-left'
                   }`}
                 >
@@ -1422,7 +1422,7 @@ export const PhoneScreens: React.FC<PhoneScreenProps> = ({
 
               <div
                 key={`enter-${screen}`}
-                className={`relative z-10 w-full h-full ${
+                className={`relative z-10 w-full h-full min-h-0 overflow-hidden ${
                   transitionDir === 'forward'
                     ? 'w800-screen-in-right'
                     : transitionDir === 'back'
@@ -1620,7 +1620,7 @@ export const PhoneScreens: React.FC<PhoneScreenProps> = ({
       </div>
 
       {/* Bottom Sony Hyper-Softkey Bar */}
-      <div className="relative z-30 flex items-center justify-between px-2.5 py-1.5 bg-[#090B12] border-t border-white/10 text-[10px] font-bold">
+      <div className="relative z-30 shrink-0 flex items-center justify-between px-2.5 py-1.5 bg-[#090B12] border-t border-white/10 text-[10px] font-bold">
         <span className="truncate max-w-[74px] text-[#FF8C38]">{leftSoftLabel}</span>
         <span className="text-[8px] font-mono text-sky-400/75">●</span>
         <span className="truncate max-w-[74px] text-right text-white/90">{rightSoftLabel}</span>

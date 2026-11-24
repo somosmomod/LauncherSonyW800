@@ -324,7 +324,7 @@ export const W800iPhone: React.FC<W800iPhoneProps> = ({
     : { x: 0, y: 0 };
 
   return (
-    <div className="relative w-full min-h-[100dvh] lg:min-h-0 lg:max-w-[346px] lg:mx-auto flex flex-col select-none">
+    <div className="relative w-full h-[100dvh] max-h-[100dvh] overflow-hidden lg:h-auto lg:max-h-none lg:overflow-visible lg:max-w-[346px] lg:mx-auto flex flex-col select-none">
       {/* Side Hardware Details (visible on desktop studio view) */}
       <div
         className="hidden lg:flex flex-col items-end justify-between absolute -left-[5px] top-[158px] h-28 w-[6px]"
@@ -365,12 +365,12 @@ export const W800iPhone: React.FC<W800iPhoneProps> = ({
       {/* Outer Shell: Edge-to-edge borderless on mobile, 3D sculpted W800i chassis on desktop */}
       <div
         style={isCustom && customBezelColor ? { background: customBezelColor } : undefined}
-        className={`relative flex-1 flex flex-col lg:block rounded-none p-0 lg:rounded-[38px] lg:p-[7px] ${outerBezelClass}`}
+        className={`relative flex-1 min-h-0 flex flex-col overflow-hidden lg:overflow-visible lg:flex-none lg:block rounded-none p-0 lg:rounded-[38px] lg:p-[7px] ${outerBezelClass}`}
       >
-        <div className="flex-1 flex flex-col lg:block rounded-none p-0 lg:rounded-[32px] lg:p-[1.5px] lg:w800-chrome-rim">
+        <div className="flex-1 min-h-0 flex flex-col overflow-hidden lg:overflow-visible lg:flex-none lg:block rounded-none p-0 lg:rounded-[32px] lg:p-[1.5px] lg:w800-chrome-rim">
           <div
             style={isCustom && customFaceColor ? { background: customFaceColor } : undefined}
-            className={`relative flex-1 flex flex-col justify-between rounded-none border-0 px-3 pt-[max(10px,env(safe-area-inset-top))] pb-[max(12px,env(safe-area-inset-bottom))] lg:rounded-[31px] lg:border lg:px-3.5 lg:pt-3 lg:pb-4 ${facePlateClass}`}
+            className={`relative flex-1 min-h-0 flex flex-col justify-between overflow-hidden lg:flex-none lg:overflow-visible rounded-none border-0 px-3 pt-[max(10px,env(safe-area-inset-top))] pb-[max(12px,env(safe-area-inset-bottom))] lg:rounded-[31px] lg:border lg:px-3.5 lg:pt-3 lg:pb-4 ${facePlateClass}`}
           >
             {/* Top Acoustic Earpiece Arch & Sony Ericsson Embossing */}
             <div className="flex flex-col items-center mb-1.5 lg:mb-2 shrink-0">
@@ -432,12 +432,14 @@ export const W800iPhone: React.FC<W800iPhoneProps> = ({
               </div>
             </div>
 
-            {/* Smoked Sapphire Glass Lens Bezel (stretches cleanly on mobile to fill screen) */}
-            <div className="relative flex-1 flex flex-col min-h-[260px] lg:flex-none rounded-[10px] p-[4px] lg:rounded-[13px] lg:p-[5px] w800-glass-lens">
-              <div className="relative flex-1 flex flex-col w-full lg:flex-none lg:aspect-[4/5] rounded-[7px] lg:rounded-[8px] overflow-hidden bg-[#05060A] border border-white/10 shadow-[inset_0_0_16px_rgba(0,0,0,0.95)]">
-                {children}
+            {/* Smoked Sapphire Glass Lens Bezel (strictly locked inside chassis; bottom hardware stays fixed) */}
+            <div className="relative flex-1 min-h-0 flex flex-col lg:flex-none rounded-[10px] p-[4px] lg:rounded-[13px] lg:p-[5px] w800-glass-lens">
+              <div className="relative flex-1 min-h-0 w-full lg:flex-none lg:aspect-[4/5] rounded-[7px] lg:rounded-[8px] overflow-hidden bg-[#05060A] border border-white/10 shadow-[inset_0_0_16px_rgba(0,0,0,0.95)] [contain:layout]">
+                <div className="absolute inset-0 overflow-hidden flex flex-col min-h-0">
+                  {children}
+                </div>
                 <div
-                  className="pointer-events-none absolute inset-0 bg-gradient-to-br from-white/[0.08] via-transparent to-transparent"
+                  className="pointer-events-none absolute inset-0 z-50 bg-gradient-to-br from-white/[0.08] via-transparent to-transparent"
                   aria-hidden="true"
                 />
               </div>

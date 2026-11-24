@@ -1430,7 +1430,13 @@ export default function App() {
   const unreadCount = notifications.filter((n) => n.unread).length;
 
   return (
-    <div className="min-h-[100dvh] flex flex-col bg-[#F3F2EE] text-[#1A1C22]">
+    <div
+      className={`${
+        mobilePanelOpen
+          ? 'min-h-[100dvh]'
+          : 'h-[100dvh] max-h-[100dvh] overflow-hidden lg:h-auto lg:max-h-none lg:min-h-[100dvh] lg:overflow-visible'
+      } flex flex-col bg-[#F3F2EE] text-[#1A1C22]`}
+    >
       {/* 3-Zone Top Bar Contract (hidden on mobile phone view so phone is 100% edge-to-edge) */}
       <header
         className={`${
@@ -1519,19 +1525,19 @@ export default function App() {
       {/* Main Responsive Workspace */}
       <main
         id="top"
-        className={`flex-1 w-full mx-auto ${
+        className={`flex-1 min-h-0 w-full mx-auto ${
           mobilePanelOpen
             ? 'max-w-7xl px-4 sm:px-6 py-5 sm:py-8'
-            : 'p-0 lg:max-w-7xl lg:px-6 lg:py-8'
+            : 'h-full overflow-hidden p-0 lg:h-auto lg:overflow-visible lg:max-w-7xl lg:px-6 lg:py-8'
         }`}
       >
         <div
-          className={`grid lg:gap-8 items-start ${
+          className={`grid lg:gap-8 items-start ${mobilePanelOpen ? '' : 'h-full lg:h-auto'} ${
             focusPhoneOnly ? 'grid-cols-1 justify-items-center' : 'grid-cols-1 lg:grid-cols-[368px_1fr]'
           }`}
         >
           {/* Photorealistic Sony Ericsson W800i Hardware Device */}
-          <section className={`${mobilePanelOpen ? 'hidden lg:block' : 'block'} w-full`}>
+          <section className={`${mobilePanelOpen ? 'hidden lg:block' : 'block h-full lg:h-auto'} w-full min-h-0`}>
             <W800iPhone
               skin={config.skin}
               customBezelColor={config.customBezelColor}
