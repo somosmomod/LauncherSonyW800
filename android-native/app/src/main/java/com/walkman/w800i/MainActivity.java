@@ -2,6 +2,7 @@ package com.walkman.w800i;
 
 import android.os.Bundle;
 import androidx.activity.OnBackPressedCallback;
+import com.getcapacitor.Bridge;
 import com.getcapacitor.BridgeActivity;
 import java.lang.ref.WeakReference;
 
@@ -17,8 +18,9 @@ public class MainActivity extends BridgeActivity {
         getOnBackPressedDispatcher().addCallback(this, new OnBackPressedCallback(true) {
             @Override
             public void handleOnBackPressed() {
-                if (bridge != null && bridge.getWebView() != null) {
-                    bridge.getWebView().evaluateJavascript(
+                Bridge currentBridge = getBridge();
+                if (currentBridge != null && currentBridge.getWebView() != null) {
+                    currentBridge.getWebView().evaluateJavascript(
                         "window.dispatchEvent(new CustomEvent('w800i-back'));",
                         null
                     );
@@ -46,8 +48,9 @@ public class MainActivity extends BridgeActivity {
         final MainActivity activity = activeInstance.get();
         if (activity == null || activity.isFinishing()) return;
         activity.runOnUiThread(() -> {
-            if (activity.bridge != null && activity.bridge.getWebView() != null) {
-                activity.bridge.getWebView().evaluateJavascript(
+            Bridge currentBridge = activity.getBridge();
+            if (currentBridge != null && currentBridge.getWebView() != null) {
+                currentBridge.getWebView().evaluateJavascript(
                     "if (window.pushSonyNotification) { window.pushSonyNotification(" + jsonPayload + "); }",
                     null
                 );

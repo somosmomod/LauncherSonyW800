@@ -24,6 +24,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
+import java.net.URI;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -244,7 +245,7 @@ public class W800iLauncherPlugin extends Plugin {
             try {
                 String currentUrl = apkUrl.trim();
                 for (int i = 0; i < 6; i++) {
-                    URL url = new URL(currentUrl);
+                    URL url = URI.create(currentUrl).toURL();
                     conn = (HttpURLConnection) url.openConnection();
                     conn.setInstanceFollowRedirects(false);
                     conn.setConnectTimeout(15000);
@@ -273,7 +274,10 @@ public class W800iLauncherPlugin extends Plugin {
                 File updateDir = new File(ctx.getCacheDir(), "updates");
                 if (!updateDir.exists()) updateDir.mkdirs();
 
-                String safeName = fileName.replaceAll("[^a-zA-Z0-9._-]", "_");
+                String baseName = (fileName != null && !fileName.trim().isEmpty())
+                    ? fileName
+                    : "w800i-walkman-launcher.apk";
+                String safeName = baseName.replaceAll("[^a-zA-Z0-9._-]", "_");
                 if (!safeName.endsWith(".apk")) safeName += ".apk";
                 File apkFile = new File(updateDir, safeName);
 
@@ -299,6 +303,10 @@ public class W800iLauncherPlugin extends Plugin {
                 }
 
                 final File readyFile = apkFile;
+                if (getActivity() == null) {
+                    call.reject("Actividad no disponible para instalar APK.");
+                    return;
+                }
                 getActivity().runOnUiThread(() -> {
                     try {
                         Uri contentUri = FileProvider.getUriForFile(
