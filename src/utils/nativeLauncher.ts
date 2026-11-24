@@ -19,6 +19,7 @@ export type AndroidSettingsTarget =
 interface W800iNativePlugin {
   getInstalledApps: () => Promise<{ apps: NativeInstalledApp[] }>;
   launchApp: (opts: { packageName: string }) => Promise<{ launched: boolean }>;
+  openExternalUrl?: (opts: { url: string }) => Promise<{ opened: boolean }>;
   isDefaultLauncher: () => Promise<{ isDefault: boolean }>;
   openSystemSettings: (opts: { target: AndroidSettingsTarget }) => Promise<{ opened: boolean }>;
   downloadAndInstallApk: (opts: {
@@ -90,6 +91,29 @@ export async function launchNativeOrFallbackApp(app: AndroidAppShortcut): Promis
   return { mode: 'web', ok: true };
 }
 
+export async function openExternalUrlNative(url: string): Promise<boolean> {
+  const plugin = getNativePlugin();
+  if (plugin?.openExternalUrl) {
+    try {
+      await plugin.openExternalUrl({ url });
+      return true;
+    } catch {
+      // Fall through to link click
+    }
+  }
+  if (typeof document !== 'undefined') {
+    const a = document.createElement('a');
+    a.href = url;
+    a.target = '_blank';
+    a.rel = 'noopener noreferrer';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    return true;
+  }
+  return false;
+}
+
 export async function checkIsDefaultHomeLauncher(): Promise<boolean> {
   const plugin = getNativePlugin();
   if (!plugin) return false;
@@ -134,6 +158,25 @@ export async function downloadAndInstallApkNative(
       started: false,
       error: err instanceof Error ? err.message : 'Error descargando APK.',
     };
+  }
+}
+
+export async function attachApkDownloadProgressListener(
+  onProgress: (pct: number) => void
+): Promise<() => void> {
+  const plugin = getNativePlugin();
+  if (!plugin?.addListener) return () => {};
+  try {
+    const handle = await plugin.addListener('apkDownloadProgress', (data) => {
+      if (typeof data?.progress === 'number') {
+        onProgress(data.progress);
+      }
+    });
+    return () => {
+      handle.remove().catch(() => {});
+    };
+  } catch {
+    return () => {};
   }
 }
 

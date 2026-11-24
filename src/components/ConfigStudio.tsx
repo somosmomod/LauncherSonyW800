@@ -62,12 +62,14 @@ interface ConfigStudioProps {
   isDefaultLauncher: boolean;
   syncingNativeApps: boolean;
   apkDownloadProgress: number | null;
+  apkUpdateError?: string | null;
   onSetDefaultLauncher: () => void;
   onSyncNativeApps: () => void;
   onOpenAndroidSettings: (target: AndroidSettingsTarget) => void;
   githubInfo: GithubBuildInfo;
   onCheckGithubBuild: (repoOverride?: string) => void;
   onInstallGithubApk: () => void;
+  onFallbackBrowserApk?: () => void;
   notificationPermission: NotificationPermission | 'unsupported';
   onRequestNotifications: () => void;
   onSendCustomSonyNotification: (title: string, body: string, appName: string) => void;
@@ -143,12 +145,14 @@ export const ConfigStudio: React.FC<ConfigStudioProps> = ({
   isDefaultLauncher,
   syncingNativeApps,
   apkDownloadProgress,
+  apkUpdateError,
   onSetDefaultLauncher,
   onSyncNativeApps,
   onOpenAndroidSettings,
   githubInfo,
   onCheckGithubBuild,
   onInstallGithubApk,
+  onFallbackBrowserApk,
   notificationPermission,
   onRequestNotifications,
   onSendCustomSonyNotification,
@@ -479,16 +483,42 @@ export const ConfigStudio: React.FC<ConfigStudioProps> = ({
         </div>
 
         {apkDownloadProgress !== null && (
-          <div className="mt-4 space-y-1">
+          <div className="mt-4 space-y-1.5">
             <div className="h-2 w-full rounded-full bg-[#ECEAE3] overflow-hidden">
               <div
                 className="h-full bg-[#E85D1A] transition-all duration-150"
-                style={{ width: `${apkDownloadProgress}%` }}
+                style={{ width: `${Math.max(4, apkDownloadProgress)}%` }}
               />
             </div>
-            <p className="text-xs font-mono text-[#E85D1A]">
-              Descargando e iniciando instalador Android del APK: {apkDownloadProgress}%
-            </p>
+            <div className="flex flex-wrap items-center justify-between gap-2 text-xs">
+              <p className="font-mono text-[#E85D1A]">
+                Descargando e iniciando instalador Android del APK: {apkDownloadProgress}%
+              </p>
+              {githubInfo.apkUrl && onFallbackBrowserApk && (
+                <button
+                  type="button"
+                  onClick={onFallbackBrowserApk}
+                  className="font-semibold text-[#1A1C22] underline hover:text-[#E85D1A] cursor-pointer"
+                >
+                  Descargar con navegador
+                </button>
+              )}
+            </div>
+          </div>
+        )}
+
+        {apkUpdateError && (
+          <div className="mt-3 rounded-xl bg-red-50 border border-red-200 px-3.5 py-2.5 text-xs text-red-800 flex flex-wrap items-center justify-between gap-2">
+            <span>{apkUpdateError}</span>
+            {githubInfo.apkUrl && onFallbackBrowserApk && (
+              <button
+                type="button"
+                onClick={onFallbackBrowserApk}
+                className="px-3 py-1 rounded-lg bg-[#E85D1A] text-white font-semibold cursor-pointer"
+              >
+                Descargar con navegador
+              </button>
+            )}
           </div>
         )}
 
@@ -1571,14 +1601,41 @@ export const ConfigStudio: React.FC<ConfigStudioProps> = ({
               </div>
 
               {apkDownloadProgress !== null && (
-                <div className="space-y-1">
+                <div className="space-y-1.5">
                   <div className="h-2 w-full rounded-full bg-[#ECEAE3] overflow-hidden">
                     <div
                       className="h-full bg-[#E85D1A] transition-all duration-150"
-                      style={{ width: `${apkDownloadProgress}%` }}
+                      style={{ width: `${Math.max(4, apkDownloadProgress)}%` }}
                     />
                   </div>
-                  <p className="text-xs font-mono text-[#E85D1A]">Descargando e instalando APK: {apkDownloadProgress}%</p>
+                  <div className="flex flex-wrap items-center justify-between gap-2 text-xs">
+                    <p className="font-mono text-[#E85D1A]">Descargando e instalando APK: {apkDownloadProgress}%</p>
+                    {githubInfo.apkUrl && onFallbackBrowserApk && (
+                      <button
+                        type="button"
+                        onClick={onFallbackBrowserApk}
+                        className="font-semibold text-[#1A1C22] underline hover:text-[#E85D1A] cursor-pointer"
+                      >
+                        ¿Se queda en 0%? Descargar con navegador
+                      </button>
+                    )}
+                  </div>
+                </div>
+              )}
+
+              {apkUpdateError && (
+                <div className="rounded-xl bg-red-50 border border-red-200 p-3 text-xs text-red-800 space-y-2">
+                  <p>{apkUpdateError}</p>
+                  {githubInfo.apkUrl && onFallbackBrowserApk && (
+                    <button
+                      type="button"
+                      onClick={onFallbackBrowserApk}
+                      className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#E85D1A] text-white font-semibold cursor-pointer"
+                    >
+                      <Download className="w-3.5 h-3.5" />
+                      Descargar APK con navegador
+                    </button>
+                  )}
                 </div>
               )}
 

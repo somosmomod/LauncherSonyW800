@@ -181,6 +181,7 @@ export interface PhoneScreenProps {
   isDefaultLauncher: boolean;
   syncingNativeApps: boolean;
   apkDownloadProgress: number | null;
+  apkUpdateError?: string | null;
   onSetDefaultLauncher: () => void;
   onSyncNativeApps: () => void;
   onOpenAndroidSettings: (target: AndroidSettingsTarget) => void;
@@ -188,6 +189,7 @@ export interface PhoneScreenProps {
   onChangeGithubRepo: (repo: string) => void;
   onCheckGithubBuild: (repoOverride?: string) => void;
   onInstallGithubApk: () => void;
+  onFallbackBrowserApk?: () => void;
   onRequestBrowserNotifications: () => void;
   onSelectMenuSlot: (slot: MainMenuSlot) => void;
   // Walkman
@@ -273,6 +275,7 @@ export const PhoneScreens: React.FC<PhoneScreenProps> = ({
   isDefaultLauncher,
   syncingNativeApps,
   apkDownloadProgress,
+  apkUpdateError,
   onSetDefaultLauncher,
   onSyncNativeApps,
   onOpenAndroidSettings,
@@ -280,6 +283,7 @@ export const PhoneScreens: React.FC<PhoneScreenProps> = ({
   onChangeGithubRepo,
   onCheckGithubBuild,
   onInstallGithubApk,
+  onFallbackBrowserApk,
   onRequestBrowserNotifications,
   onSelectMenuSlot,
   currentTrack,
@@ -1285,16 +1289,42 @@ export const PhoneScreens: React.FC<PhoneScreenProps> = ({
                 />
 
                 {apkDownloadProgress !== null && (
-                  <div className="space-y-0.5">
+                  <div className="space-y-1">
                     <div className="h-1.5 w-full rounded-full bg-white/15 overflow-hidden">
                       <div
                         className="h-full bg-[#FF731D] transition-all duration-150"
-                        style={{ width: `${apkDownloadProgress}%` }}
+                        style={{ width: `${Math.max(4, apkDownloadProgress)}%` }}
                       />
                     </div>
-                    <p className="text-[8px] font-mono text-sky-300">
-                      Descargando APK nativo: {apkDownloadProgress}%
-                    </p>
+                    <div className="flex items-center justify-between gap-1">
+                      <p className="text-[8px] font-mono text-sky-300">
+                        Descargando APK: {apkDownloadProgress}%
+                      </p>
+                      {githubInfo.apkUrl && onFallbackBrowserApk && (
+                        <button
+                          type="button"
+                          onClick={onFallbackBrowserApk}
+                          className="text-[8px] text-[#FF8C38] underline cursor-pointer"
+                        >
+                          Navegador
+                        </button>
+                      )}
+                    </div>
+                  </div>
+                )}
+
+                {apkUpdateError && (
+                  <div className="rounded-lg bg-red-500/15 border border-red-400/35 p-1.5 space-y-1">
+                    <p className="text-[8px] text-red-200 leading-tight">{apkUpdateError}</p>
+                    {githubInfo.apkUrl && onFallbackBrowserApk && (
+                      <button
+                        type="button"
+                        onClick={onFallbackBrowserApk}
+                        className="w-full py-1 rounded bg-[#E85D1A] text-white text-[8px] font-bold cursor-pointer"
+                      >
+                        Descargar por navegador
+                      </button>
+                    )}
                   </div>
                 )}
 

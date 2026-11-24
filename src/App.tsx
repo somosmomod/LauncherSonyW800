@@ -32,13 +32,14 @@ import {
 } from './utils/githubUpdater';
 import {
   AndroidSettingsTarget,
+  attachApkDownloadProgressListener,
   checkIsDefaultHomeLauncher,
   downloadAndInstallApkNative,
   fetchNativeInstalledApps,
   isNativeAndroidApk,
   launchNativeOrFallbackApp,
-  listenNativeApkDownloadProgress,
   openAndroidSystemSettings,
+  openExternalUrlNative,
 } from './utils/nativeLauncher';
 import {
   playDtmfTone,
@@ -188,6 +189,7 @@ export default function App() {
   const [isDefaultLauncher, setIsDefaultLauncher] = useState(false);
   const [syncingNativeApps, setSyncingNativeApps] = useState(false);
   const [apkDownloadProgress, setApkDownloadProgress] = useState<number | null>(null);
+  const [apkUpdateError, setApkUpdateError] = useState<string | null>(null);
 
   // Sony Shade, Notifications & Control Center
   const [shadeOpen, setShadeOpen] = useState(false);
@@ -508,6 +510,30 @@ export default function App() {
     [config.githubRepo, pushSonyNotification, showNotice]
   );
 
+  const handleFallbackBrowserApkDownload = useCallback(async () => {
+    if (!githubInfo.apkUrl) return;
+    setApkUpdateError(null);
+    setApkDownloadProgress(null);
+    const marker = githubInfo.releaseTag
+      ? `${githubInfo.releaseTag}:${githubInfo.publishedAt || ''}`
+      : githubInfo.latestRunSha;
+    if (marker) {
+      try {
+        localStorage.setItem(STORAGE_KEY_GITHUB_INSTALLED_TAG, marker);
+      } catch {
+        // ignore
+      }
+    }
+    if (isNativeApk) {
+      await openExternalUrlNative(githubInfo.apkUrl);
+      showNotice('Abriendo navegador para descargar APK...');
+    } else {
+      triggerGithubApkDownload(githubInfo.apkUrl, githubInfo.apkName, marker);
+      showNotice('Descargando APK de GitHub...');
+    }
+    setGithubInfo((prev) => ({ ...prev, updateAvailable: false }));
+  }, [githubInfo, isNativeApk, showNotice]);
+
   const handleInstallGithubApk = useCallback(async () => {
     if (!githubInfo.apkUrl) {
       showNotice('Comprueba primero el repo GitHub');
@@ -526,28 +552,43 @@ export default function App() {
     }
 
     if (isNativeApk) {
+      setApkUpdateError(null);
       setApkDownloadProgress(0);
       showNotice('Descargando actualización APK...');
-      const stopListening = listenNativeApkDownloadProgress((pct) => {
+      let moved = false;
+      const stopListening = await attachApkDownloadProgressListener((pct) => {
+        if (pct > 0) moved = true;
         setApkDownloadProgress(pct);
       });
+      const stallTimer = window.setTimeout(() => {
+        if (!moved) {
+          setApkUpdateError(
+            'La descarga nativa tarda en responder (o tu APK actual tiene el descargador antiguo). Usa "Descargar con navegador" abajo para instalar la versión nueva.'
+          );
+        }
+      }, 9000);
       try {
         const res = await downloadAndInstallApkNative(githubInfo.apkUrl, githubInfo.apkName);
         if (res.needsPermission) {
+          setApkUpdateError('Activa "Instalar apps desconocidas" en los ajustes que se abrieron y vuelve a intentarlo.');
           showNotice('Activa "Instalar apps desconocidas" y reintenta');
         } else if (!res.started) {
+          setApkUpdateError(res.error || 'No se pudo iniciar el instalador nativo. Prueba con "Descargar con navegador".');
           showNotice(res.error || 'Error al iniciar instalador APK');
         } else {
+          setApkUpdateError(null);
           setGithubInfo((prev) => ({ ...prev, updateAvailable: false }));
           showNotice('Abriendo instalador Android...');
         }
       } finally {
+        window.clearTimeout(stallTimer);
         stopListening();
         setApkDownloadProgress(null);
       }
       return;
     }
 
+    setApkUpdateError(null);
     triggerGithubApkDownload(githubInfo.apkUrl, githubInfo.apkName, marker);
     setGithubInfo((prev) => ({ ...prev, updateAvailable: false }));
     showNotice('Descargando APK de GitHub...');
@@ -1604,6 +1645,7 @@ export default function App() {
                 isDefaultLauncher={isDefaultLauncher}
                 syncingNativeApps={syncingNativeApps}
                 apkDownloadProgress={apkDownloadProgress}
+                apkUpdateError={apkUpdateError}
                 onSetDefaultLauncher={handleSetDefaultLauncher}
                 onSyncNativeApps={() => handleSyncNativeApps(false)}
                 onOpenAndroidSettings={handleOpenAndroidSettings}
@@ -1613,6 +1655,7 @@ export default function App() {
                 }
                 onCheckGithubBuild={handleCheckGithubBuild}
                 onInstallGithubApk={handleInstallGithubApk}
+                onFallbackBrowserApk={handleFallbackBrowserApkDownload}
                 onRequestBrowserNotifications={handleRequestNotifications}
                 onSelectMenuSlot={handleSelectMenuSlot}
                 currentTrack={currentTrack}
@@ -1712,12 +1755,14 @@ export default function App() {
                 isDefaultLauncher={isDefaultLauncher}
                 syncingNativeApps={syncingNativeApps}
                 apkDownloadProgress={apkDownloadProgress}
+                apkUpdateError={apkUpdateError}
                 onSetDefaultLauncher={handleSetDefaultLauncher}
                 onSyncNativeApps={() => handleSyncNativeApps(false)}
                 onOpenAndroidSettings={handleOpenAndroidSettings}
                 githubInfo={githubInfo}
                 onCheckGithubBuild={handleCheckGithubBuild}
                 onInstallGithubApk={handleInstallGithubApk}
+                onFallbackBrowserApk={handleFallbackBrowserApkDownload}
                 notificationPermission={notificationPermission}
                 onRequestNotifications={handleRequestNotifications}
                 onSendCustomSonyNotification={(title, body, appName) => {

@@ -37,12 +37,18 @@ import java.util.concurrent.Executors;
 
 @CapacitorPlugin(name = "W800iLauncher")
 public class W800iLauncherPlugin extends Plugin {
-    private final ExecutorService executor = Executors.newSingleThreadExecutor();
+    private final ExecutorService executor = Executors.newCachedThreadPool();
 
     private static class AppEntry {
         String name;
         String packageName;
         String iconDataUrl;
+    }
+
+    private void emitDownloadProgress(int pct) {
+        JSObject prog = new JSObject();
+        prog.put("progress", Math.max(0, Math.min(100, pct)));
+        notifyListeners("apkDownloadProgress", prog);
     }
 
     private static String drawableToBase64Png(Drawable drawable) {
@@ -157,6 +163,25 @@ public class W800iLauncherPlugin extends Plugin {
     }
 
     @PluginMethod
+    public void openExternalUrl(PluginCall call) {
+        String targetUrl = call.getString("url");
+        if (targetUrl == null || targetUrl.trim().isEmpty()) {
+            call.reject("URL requerida");
+            return;
+        }
+        try {
+            Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(targetUrl.trim()));
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            getContext().startActivity(intent);
+            JSObject res = new JSObject();
+            res.put("opened", true);
+            call.resolve(res);
+        } catch (Exception e) {
+            call.reject("No se pudo abrir la URL: " + e.getMessage());
+        }
+    }
+
+    @PluginMethod
     public void isDefaultLauncher(PluginCall call) {
         try {
             Intent intent = new Intent(Intent.ACTION_MAIN);
@@ -240,37 +265,52 @@ public class W800iLauncherPlugin extends Plugin {
             return;
         }
 
+        emitDownloadProgress(1);
+
         executor.execute(() -> {
             HttpURLConnection conn = null;
             try {
                 String currentUrl = apkUrl.trim();
-                for (int i = 0; i < 6; i++) {
-                    URL url = URI.create(currentUrl).toURL();
+                int finalCode = -1;
+                for (int i = 0; i < 8; i++) {
+                    URL url;
+                    try {
+                        url = URI.create(currentUrl).toURL();
+                    } catch (IllegalArgumentException badUri) {
+                        url = new URL(currentUrl);
+                    }
                     conn = (HttpURLConnection) url.openConnection();
                     conn.setInstanceFollowRedirects(false);
-                    conn.setConnectTimeout(15000);
-                    conn.setReadTimeout(30000);
-                    int code = conn.getResponseCode();
-                    if (code == HttpURLConnection.HTTP_MOVED_TEMP
-                        || code == HttpURLConnection.HTTP_MOVED_PERM
-                        || code == HttpURLConnection.HTTP_SEE_OTHER
-                        || code == 307
-                        || code == 308) {
+                    conn.setConnectTimeout(25000);
+                    conn.setReadTimeout(60000);
+                    conn.setRequestProperty("User-Agent", "W800iWalkmanLauncher/2.5 (Android)");
+                    conn.setRequestProperty("Accept", "application/octet-stream, */*");
+                    conn.setRequestProperty("Accept-Encoding", "identity");
+
+                    finalCode = conn.getResponseCode();
+                    if (finalCode == HttpURLConnection.HTTP_MOVED_TEMP
+                        || finalCode == HttpURLConnection.HTTP_MOVED_PERM
+                        || finalCode == HttpURLConnection.HTTP_SEE_OTHER
+                        || finalCode == 307
+                        || finalCode == 308) {
                         String location = conn.getHeaderField("Location");
                         conn.disconnect();
-                        if (location == null) break;
-                        currentUrl = location;
+                        conn = null;
+                        if (location == null || location.trim().isEmpty()) break;
+                        currentUrl = new URL(url, location).toString();
                     } else {
                         break;
                     }
                 }
 
-                if (conn == null || conn.getResponseCode() >= 400) {
-                    call.reject("Error descargando APK desde GitHub");
+                if (conn == null || finalCode < 200 || finalCode >= 400) {
+                    call.reject("Error descargando APK desde GitHub (HTTP " + finalCode + ")");
                     return;
                 }
 
-                int totalLen = conn.getContentLength();
+                emitDownloadProgress(3);
+
+                long totalLen = conn.getContentLengthLong();
                 File updateDir = new File(ctx.getCacheDir(), "updates");
                 if (!updateDir.exists()) updateDir.mkdirs();
 
@@ -283,24 +323,32 @@ public class W800iLauncherPlugin extends Plugin {
 
                 try (InputStream in = conn.getInputStream();
                      FileOutputStream out = new FileOutputStream(apkFile)) {
-                    byte[] buf = new byte[8192];
+                    byte[] buf = new byte[16384];
                     int read;
                     long downloaded = 0;
-                    int lastPct = -1;
+                    int lastPct = 3;
+                    long lastEmitMs = System.currentTimeMillis();
+                    long estimatedTotal = totalLen > 0 ? totalLen : (7L * 1024L * 1024L);
+
                     while ((read = in.read(buf)) != -1) {
                         out.write(buf, 0, read);
                         downloaded += read;
-                        if (totalLen > 0) {
-                            int pct = (int) Math.min(100, (downloaded * 100L) / totalLen);
-                            if (pct != lastPct && (pct % 5 == 0 || pct == 100)) {
+                        long nowMs = System.currentTimeMillis();
+                        int rawPct = (int) ((downloaded * 100L) / Math.max(1L, estimatedTotal));
+                        int pct = totalLen > 0
+                            ? Math.max(3, Math.min(99, rawPct))
+                            : Math.max(3, Math.min(95, rawPct));
+                        if (pct >= lastPct + 2 || nowMs - lastEmitMs >= 350) {
+                            if (pct > lastPct) {
                                 lastPct = pct;
-                                JSObject prog = new JSObject();
-                                prog.put("progress", pct);
-                                notifyListeners("apkDownloadProgress", prog);
                             }
+                            lastEmitMs = nowMs;
+                            emitDownloadProgress(lastPct);
                         }
                     }
                 }
+
+                emitDownloadProgress(100);
 
                 final File readyFile = apkFile;
                 if (getActivity() == null) {
