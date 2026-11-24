@@ -52,16 +52,36 @@ jobs:
           cp -f android-native/app/src/main/AndroidManifest.xml android/app/src/main/AndroidManifest.xml
           cp -f android-native/app/src/main/res/xml/file_paths.xml android/app/src/main/res/xml/file_paths.xml
           cp -f android-native/app/src/main/java/com/walkman/w800i/*.java android/app/src/main/java/com/walkman/w800i/
-          BUILD_NUM="${{ github.run_number }}"
-          sed -i "s/versionCode [0-9]*/versionCode ${BUILD_NUM}/g" android/app/build.gradle
-          sed -i "s/versionName \"[^\"]*\"/versionName \"2.5.${BUILD_NUM}\"/g" android/app/build.gradle
+          node -e '
+            const fs = require("fs");
+            const p = "android/app/build.gradle";
+            let g = fs.readFileSync(p, "utf8");
+            const buildNum = process.env.BUILD_NUM || "1";
+            g = g.replace(/versionCode\s+\d+/, "versionCode " + buildNum);
+            g = g.replace(/versionName\s+"[^"]*"/, "versionName \"2.5." + buildNum + "\"");
+            if (!g.includes("androidx.core:core:")) {
+              g = g.replace(
+                /implementation "androidx\.appcompat:appcompat:\$androidxAppCompatVersion"/,
+                "implementation \"androidx.appcompat:appcompat:$androidxAppCompatVersion\"\n    implementation \"androidx.core:core:$androidxCoreVersion\"\n    implementation \"androidx.activity:activity:$androidxActivityVersion\""
+              );
+            }
+            if (!g.includes("compileOptions")) {
+              g = g.replace(
+                /buildTypes\s*\{/,
+                "compileOptions {\n        sourceCompatibility JavaVersion.VERSION_21\n        targetCompatibility JavaVersion.VERSION_21\n    }\n    buildTypes {"
+              );
+            }
+            fs.writeFileSync(p, g);
+          '
           npx --yes cap sync android
+        env:
+          BUILD_NUM: ${{ github.run_number }}
 
       - name: Compilar APK Debug Nativo
         working-directory: android
         run: |
           chmod +x gradlew
-          ./gradlew assembleDebug --no-daemon
+          ./gradlew assembleDebug --no-daemon --stacktrace
 
       - name: Preparar APK para distribucion
         run: |
