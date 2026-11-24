@@ -377,13 +377,13 @@ export const ConfigStudio: React.FC<ConfigStudioProps> = ({
   };
 
   return (
-    <div className="flex flex-col gap-6">
+    <div className="flex flex-col gap-4 sm:gap-6 min-w-0 w-full">
       {/* Native APK & Launcher Banner Card */}
-      <section className="rounded-2xl bg-white border border-[#E2E0D8] p-5 sm:p-6">
-        <div className="flex flex-wrap items-start justify-between gap-4">
-          <div className="max-w-xl">
+      <section className="rounded-2xl bg-white border border-[#E2E0D8] p-4 sm:p-6 overflow-hidden">
+        <div className="flex flex-col xl:flex-row xl:items-start xl:justify-between gap-4">
+          <div className="max-w-xl min-w-0">
             <div className="flex flex-wrap items-center gap-2">
-              <h2 className="text-lg font-bold tracking-tight text-[#1A1C22]">
+              <h2 className="text-base sm:text-lg font-bold tracking-tight text-[#1A1C22]">
                 APK Nativo Android Launcher · W800i
               </h2>
               <span
@@ -402,10 +402,10 @@ export const ConfigStudio: React.FC<ConfigStudioProps> = ({
                   : 'Vista Web · APK en GitHub'}
               </span>
             </div>
-            <p className="mt-1.5 text-sm text-[#575A63] leading-relaxed">
+            <p className="mt-1.5 text-xs sm:text-sm text-[#575A63] leading-relaxed">
               Proyecto nativo con <strong>Home Launcher</strong>, lectura real de apps e iconos Android (<span className="font-mono">PackageManager</span>), notificaciones reales y actualización de APK desde GitHub. Personaliza los 12 iconos del menú, dock, carcasa, fondo OLED y widgets.
             </p>
-            <div className="mt-2.5 flex flex-wrap items-center gap-x-2 gap-y-1 text-xs text-[#6B6E78]">
+            <div className="mt-2.5 flex flex-wrap items-center gap-x-2 gap-y-1 text-[11px] sm:text-xs text-[#6B6E78]">
               <span className="font-mono">{APP_VERSION}</span>
               <span aria-hidden="true">·</span>
               <span>Capacitor + Java Plugin Nativo</span>
@@ -414,7 +414,7 @@ export const ConfigStudio: React.FC<ConfigStudioProps> = ({
             </div>
           </div>
 
-          <div className="flex flex-wrap items-center gap-2 shrink-0">
+          <div className="w-full xl:w-auto grid grid-cols-2 sm:flex sm:flex-wrap items-stretch sm:items-center gap-2 min-w-0">
             <button
               type="button"
               onClick={() => {
@@ -425,10 +425,10 @@ export const ConfigStudio: React.FC<ConfigStudioProps> = ({
                   showStudioNotice('Compila el APK en GitHub e instálalo para fijarlo como Launcher Home.');
                 }
               }}
-              className="inline-flex items-center gap-1.5 px-3.5 py-2.5 rounded-xl bg-[#E85D1A] hover:bg-[#D14D10] text-white text-xs font-semibold transition-colors whitespace-nowrap shrink-0 cursor-pointer"
+              className="inline-flex items-center justify-center gap-1.5 px-2.5 sm:px-3.5 py-2.5 rounded-xl bg-[#E85D1A] hover:bg-[#D14D10] text-white text-[11.5px] sm:text-xs font-semibold transition-colors min-w-0 text-center cursor-pointer"
             >
-              <Smartphone className="w-3.5 h-3.5" />
-              {isDefaultLauncher ? 'Launcher Activo ✓' : 'Elegir como Launcher'}
+              <Smartphone className="w-3.5 h-3.5 shrink-0" />
+              <span className="truncate">{isDefaultLauncher ? 'Launcher Activo ✓' : 'Elegir Launcher'}</span>
             </button>
 
             <button
@@ -441,39 +441,39 @@ export const ConfigStudio: React.FC<ConfigStudioProps> = ({
                   showStudioNotice('En el APK instalado, este botón carga automáticamente todas tus apps e iconos PNG reales.');
                 }
               }}
-              className="inline-flex items-center gap-1.5 px-3.5 py-2.5 rounded-xl border border-[#DCDAD1] hover:border-[#E85D1A] text-[#1A1C22] text-xs font-semibold transition-colors whitespace-nowrap shrink-0 cursor-pointer"
+              className="inline-flex items-center justify-center gap-1.5 px-2.5 sm:px-3.5 py-2.5 rounded-xl border border-[#DCDAD1] hover:border-[#E85D1A] text-[#1A1C22] text-[11.5px] sm:text-xs font-semibold transition-colors min-w-0 text-center cursor-pointer"
             >
-              <RefreshCw className={`w-3.5 h-3.5 text-[#E85D1A] ${syncingNativeApps ? 'animate-spin' : ''}`} />
-              Sincronizar Apps Reales
+              <RefreshCw className={`w-3.5 h-3.5 shrink-0 text-[#E85D1A] ${syncingNativeApps ? 'animate-spin' : ''}`} />
+              <span className="truncate">Sincronizar Apps</span>
             </button>
 
             {githubInfo.apkUrl ? (
               <button
                 type="button"
                 onClick={onInstallGithubApk}
-                className="inline-flex items-center gap-1.5 px-3.5 py-2.5 rounded-xl bg-[#1A1C22] hover:bg-[#2B2E38] text-white text-xs font-semibold transition-colors whitespace-nowrap shrink-0 cursor-pointer"
+                className="inline-flex items-center justify-center gap-1.5 px-2.5 sm:px-3.5 py-2.5 rounded-xl bg-[#1A1C22] hover:bg-[#2B2E38] text-white text-[11.5px] sm:text-xs font-semibold transition-colors min-w-0 text-center cursor-pointer"
               >
-                <Download className="w-3.5 h-3.5 text-[#FF8C38]" />
-                {githubInfo.updateAvailable ? 'Actualizar APK' : 'Descargar APK'}
+                <Download className="w-3.5 h-3.5 shrink-0 text-[#FF8C38]" />
+                <span className="truncate">{githubInfo.updateAvailable ? 'Actualizar APK' : 'Descargar APK'}</span>
               </button>
             ) : (
               <button
                 type="button"
                 onClick={() => setTab('android')}
-                className="inline-flex items-center gap-1.5 px-3.5 py-2.5 rounded-xl bg-[#1A1C22] hover:bg-[#2B2E38] text-white text-xs font-semibold transition-colors whitespace-nowrap shrink-0 cursor-pointer"
+                className="inline-flex items-center justify-center gap-1.5 px-2.5 sm:px-3.5 py-2.5 rounded-xl bg-[#1A1C22] hover:bg-[#2B2E38] text-white text-[11.5px] sm:text-xs font-semibold transition-colors min-w-0 text-center cursor-pointer"
               >
-                <GitBranch className="w-3.5 h-3.5 text-[#FF8C38]" />
-                Compilar APK GitHub
+                <GitBranch className="w-3.5 h-3.5 shrink-0 text-[#FF8C38]" />
+                <span className="truncate">APK GitHub</span>
               </button>
             )}
 
             <button
               type="button"
               onClick={onToggleFullscreen}
-              className="inline-flex items-center gap-1.5 px-3 py-2.5 rounded-xl border border-[#DCDAD1] hover:border-[#1A1C22] text-[#1A1C22] text-xs font-semibold transition-colors whitespace-nowrap shrink-0 cursor-pointer"
+              className="inline-flex items-center justify-center gap-1.5 px-2.5 sm:px-3 py-2.5 rounded-xl border border-[#DCDAD1] hover:border-[#1A1C22] text-[#1A1C22] text-[11.5px] sm:text-xs font-semibold transition-colors min-w-0 text-center cursor-pointer"
             >
-              <Maximize className="w-3.5 h-3.5" />
-              {fullscreenActive ? 'Salir' : 'Inmersivo'}
+              <Maximize className="w-3.5 h-3.5 shrink-0" />
+              <span className="truncate">{fullscreenActive ? 'Salir' : 'Inmersivo'}</span>
             </button>
           </div>
         </div>
@@ -501,12 +501,12 @@ export const ConfigStudio: React.FC<ConfigStudioProps> = ({
 
       {/* Main Segmented Studio Panel */}
       <section className="rounded-2xl bg-white border border-[#E2E0D8] overflow-hidden">
-        <div className="p-3 sm:p-4 border-b border-[#ECEAE3] bg-[#FAF9F6]">
-          <div className="inline-flex flex-wrap items-center gap-1 p-1 rounded-xl bg-[#ECEAE2]">
+        <div className="p-2.5 sm:p-4 border-b border-[#ECEAE3] bg-[#FAF9F6]">
+          <div className="grid grid-cols-2 sm:inline-flex sm:flex-wrap items-center gap-1 p-1 rounded-xl bg-[#ECEAE2] w-full sm:w-auto">
             <button
               type="button"
               onClick={() => setTab('apps')}
-              className={`px-3 py-2 rounded-lg text-xs font-semibold transition-colors whitespace-nowrap shrink-0 cursor-pointer ${
+              className={`px-2.5 sm:px-3 py-2 rounded-lg text-[11.5px] sm:text-xs font-semibold transition-colors text-center truncate cursor-pointer ${
                 tab === 'apps' ? 'bg-white text-[#1A1C22] shadow-sm' : 'text-[#5C5F68] hover:text-[#1A1C22]'
               }`}
             >
@@ -515,7 +515,7 @@ export const ConfigStudio: React.FC<ConfigStudioProps> = ({
             <button
               type="button"
               onClick={() => setTab('menu')}
-              className={`px-3 py-2 rounded-lg text-xs font-semibold transition-colors whitespace-nowrap shrink-0 cursor-pointer ${
+              className={`px-2.5 sm:px-3 py-2 rounded-lg text-[11.5px] sm:text-xs font-semibold transition-colors text-center truncate cursor-pointer ${
                 tab === 'menu' ? 'bg-white text-[#1A1C22] shadow-sm' : 'text-[#5C5F68] hover:text-[#1A1C22]'
               }`}
             >
@@ -524,7 +524,7 @@ export const ConfigStudio: React.FC<ConfigStudioProps> = ({
             <button
               type="button"
               onClick={() => setTab('customize')}
-              className={`px-3 py-2 rounded-lg text-xs font-semibold transition-colors whitespace-nowrap shrink-0 cursor-pointer ${
+              className={`px-2.5 sm:px-3 py-2 rounded-lg text-[11.5px] sm:text-xs font-semibold transition-colors text-center truncate cursor-pointer ${
                 tab === 'customize' ? 'bg-white text-[#1A1C22] shadow-sm' : 'text-[#5C5F68] hover:text-[#1A1C22]'
               }`}
             >
@@ -533,7 +533,7 @@ export const ConfigStudio: React.FC<ConfigStudioProps> = ({
             <button
               type="button"
               onClick={() => setTab('widgets')}
-              className={`px-3 py-2 rounded-lg text-xs font-semibold transition-colors whitespace-nowrap shrink-0 cursor-pointer ${
+              className={`px-2.5 sm:px-3 py-2 rounded-lg text-[11.5px] sm:text-xs font-semibold transition-colors text-center truncate cursor-pointer ${
                 tab === 'widgets' ? 'bg-white text-[#1A1C22] shadow-sm' : 'text-[#5C5F68] hover:text-[#1A1C22]'
               }`}
             >
@@ -542,7 +542,7 @@ export const ConfigStudio: React.FC<ConfigStudioProps> = ({
             <button
               type="button"
               onClick={() => setTab('android')}
-              className={`px-3 py-2 rounded-lg text-xs font-semibold transition-colors whitespace-nowrap shrink-0 cursor-pointer ${
+              className={`px-2.5 sm:px-3 py-2 rounded-lg text-[11.5px] sm:text-xs font-semibold transition-colors text-center truncate cursor-pointer ${
                 tab === 'android' ? 'bg-white text-[#1A1C22] shadow-sm' : 'text-[#5C5F68] hover:text-[#1A1C22]'
               }`}
             >
@@ -551,7 +551,7 @@ export const ConfigStudio: React.FC<ConfigStudioProps> = ({
             <button
               type="button"
               onClick={() => setTab('import')}
-              className={`px-3 py-2 rounded-lg text-xs font-semibold transition-colors whitespace-nowrap shrink-0 cursor-pointer ${
+              className={`px-2.5 sm:px-3 py-2 rounded-lg text-[11.5px] sm:text-xs font-semibold transition-colors text-center truncate cursor-pointer ${
                 tab === 'import' ? 'bg-white text-[#1A1C22] shadow-sm' : 'text-[#5C5F68] hover:text-[#1A1C22]'
               }`}
             >
@@ -1176,8 +1176,8 @@ export const ConfigStudio: React.FC<ConfigStudioProps> = ({
                     >
                       Quitar fondo
                     </button>
-                    <label className="flex items-center gap-2 text-xs font-medium text-[#575A63] ml-auto">
-                      <span>Oscuridad ({config.wallpaperDim ?? 65}%):</span>
+                    <label className="flex items-center gap-2 text-xs font-medium text-[#575A63] sm:ml-auto">
+                      <span className="shrink-0">Oscuridad ({config.wallpaperDim ?? 65}%):</span>
                       <input
                         type="range"
                         min={15}
@@ -1186,7 +1186,7 @@ export const ConfigStudio: React.FC<ConfigStudioProps> = ({
                         onChange={(e) =>
                           onUpdateConfig((prev) => ({ ...prev, wallpaperDim: Number(e.target.value) }))
                         }
-                        className="accent-[#E85D1A]"
+                        className="accent-[#E85D1A] w-28 max-w-full"
                       />
                     </label>
                   </>
@@ -1492,29 +1492,32 @@ export const ConfigStudio: React.FC<ConfigStudioProps> = ({
 
         {/* TAB: APK NATIVO, PERMISOS ANDROID Y GITHUB */}
         {tab === 'android' && (
-          <div className="p-5 sm:p-6 space-y-6">
+          <div className="p-4 sm:p-6 space-y-5">
             {/* GitHub Compilation Direct Installer & Updater */}
-            <div className="rounded-xl border border-[#F0C8B2] bg-[#FFF8F4] p-4 space-y-3">
-              <div className="flex flex-wrap items-start justify-between gap-3">
-                <div>
+            <div className="rounded-xl border border-[#F0C8B2] bg-[#FFF8F4] p-4 space-y-3.5 overflow-hidden">
+              <div className="flex flex-wrap items-start justify-between gap-2">
+                <div className="min-w-0">
                   <div className="flex items-center gap-2">
-                    <GitBranch className="w-4 h-4 text-[#E85D1A]" />
+                    <GitBranch className="w-4 h-4 text-[#E85D1A] shrink-0" />
                     <span className="text-sm font-bold text-[#1A1C22]">
-                      Compilación APK en GitHub (Instalar y Auto-Actualizar)
+                      Actualizar e Instalar APK desde GitHub
                     </span>
                   </div>
-                  <p className="mt-1 text-xs text-[#575A63]">
-                    Sube este proyecto a GitHub y <span className="font-mono">.github/workflows/build-apk.yml</span> compilará automáticamente <span className="font-mono">w800i-walkman-launcher.apk</span> usando Capacitor + el plugin Java nativo incluido en <span className="font-mono">android-native/</span>.
+                  <p className="mt-1 text-xs text-[#575A63] leading-relaxed">
+                    Conecta tu repositorio de GitHub donde subiste este proyecto para descargar o actualizar el APK directamente desde la app.
                   </p>
                 </div>
                 {githubInfo.lastCheckedAt && (
-                  <span className="font-mono text-[11px] text-[#6B6E78]">
-                    Comprobado: {githubInfo.lastCheckedAt}
+                  <span className="font-mono text-[11px] text-[#6B6E78] bg-white px-2 py-0.5 rounded-md border border-[#ECEAE3]">
+                    {githubInfo.lastCheckedAt}
                   </span>
                 )}
               </div>
 
-              <div className="flex flex-wrap items-center gap-2">
+              <div className="space-y-2">
+                <label className="block text-xs font-semibold text-[#1A1C22]">
+                  Repositorio GitHub (<span className="font-mono text-[#E85D1A]">usuario/repositorio</span> o enlace completo)
+                </label>
                 <input
                   type="text"
                   value={githubRepoInput}
@@ -1522,31 +1525,49 @@ export const ConfigStudio: React.FC<ConfigStudioProps> = ({
                   onBlur={() =>
                     onUpdateConfig((prev) => ({ ...prev, githubRepo: githubRepoInput.trim() }))
                   }
-                  placeholder="usuario/w800i-launcher o URL de GitHub"
-                  className="flex-1 min-w-[210px] px-3 py-2 rounded-lg border border-[#D8D6CE] bg-white text-xs font-mono focus:outline-none focus:border-[#E85D1A]"
+                  placeholder="ej. somosmomodsomosmomod/w800i-launcher"
+                  className="w-full px-3 py-2.5 rounded-xl border border-[#D8D6CE] bg-white text-xs font-mono text-[#1A1C22] placeholder:text-[#8E929C] focus:outline-none focus:border-[#E85D1A]"
                 />
-                <button
-                  type="button"
-                  onClick={() => {
-                    const clean = githubRepoInput.trim();
-                    onUpdateConfig((prev) => ({ ...prev, githubRepo: clean }));
-                    onCheckGithubBuild(clean);
-                  }}
-                  className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl border border-[#D8D6CE] bg-white hover:bg-[#F3F2EE] text-xs font-semibold text-[#1A1C22] cursor-pointer"
-                >
-                  <RefreshCw className={`w-3.5 h-3.5 ${githubInfo.checking ? 'animate-spin' : ''}`} />
-                  Comprobar GitHub
-                </button>
-                {githubInfo.apkUrl && (
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 pt-0.5">
                   <button
                     type="button"
-                    onClick={onInstallGithubApk}
-                    className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-[#E85D1A] hover:bg-[#D14D10] text-white text-xs font-semibold cursor-pointer"
+                    onClick={() => {
+                      const clean = githubRepoInput.trim();
+                      onUpdateConfig((prev) => ({ ...prev, githubRepo: clean }));
+                      onCheckGithubBuild(clean);
+                    }}
+                    className="w-full inline-flex items-center justify-center gap-2 px-3.5 py-2.5 rounded-xl border border-[#D8D6CE] bg-white hover:bg-[#F3F2EE] text-xs font-semibold text-[#1A1C22] cursor-pointer"
                   >
-                    <Download className="w-3.5 h-3.5" />
-                    {githubInfo.updateAvailable ? 'Actualizar APK ahora' : 'Instalar / Descargar APK'}
+                    <RefreshCw className={`w-3.5 h-3.5 text-[#E85D1A] ${githubInfo.checking ? 'animate-spin' : ''}`} />
+                    Comprobar GitHub
                   </button>
-                )}
+
+                  {githubInfo.apkUrl ? (
+                    <button
+                      type="button"
+                      onClick={onInstallGithubApk}
+                      className="w-full inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-[#E85D1A] hover:bg-[#D14D10] text-white text-xs font-semibold cursor-pointer"
+                    >
+                      <Download className="w-3.5 h-3.5" />
+                      {githubInfo.updateAvailable ? 'Actualizar APK ahora' : 'Instalar / Descargar APK'}
+                    </button>
+                  ) : githubInfo.repo && githubInfo.repo.includes('/') ? (
+                    <a
+                      href={`https://github.com/${githubInfo.repo}/releases`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="w-full inline-flex items-center justify-center gap-1.5 px-3.5 py-2.5 rounded-xl bg-[#1A1C22] hover:bg-[#2B2E38] text-white text-xs font-semibold"
+                    >
+                      <ExternalLink className="w-3.5 h-3.5 text-[#FF8C38]" />
+                      Abrir Releases en GitHub
+                    </a>
+                  ) : (
+                    <div className="hidden sm:flex items-center px-3 py-2 rounded-xl bg-white/70 border border-[#EDE3DC] text-[11px] text-[#6B6E78]">
+                      Ejemplo: <span className="font-mono ml-1 text-[#1A1C22]">tu-usuario/w800i</span>
+                    </div>
+                  )}
+                </div>
               </div>
 
               {apkDownloadProgress !== null && (
@@ -1557,44 +1578,67 @@ export const ConfigStudio: React.FC<ConfigStudioProps> = ({
                       style={{ width: `${apkDownloadProgress}%` }}
                     />
                   </div>
-                  <p className="text-xs font-mono text-[#E85D1A]">Progreso APK: {apkDownloadProgress}%</p>
+                  <p className="text-xs font-mono text-[#E85D1A]">Descargando e instalando APK: {apkDownloadProgress}%</p>
                 </div>
               )}
 
-              <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-[#43464F]">
-                {githubInfo.apkUrl ? (
-                  <>
-                    <span className="font-semibold text-emerald-700">
-                      APK listo: {githubInfo.apkName || 'w800i-walkman-launcher.apk'}
-                    </span>
-                    {githubInfo.releaseTag && (
-                      <span className="font-mono text-[#E85D1A]">Release {githubInfo.releaseTag}</span>
-                    )}
-                    {githubInfo.apkSizeMb && (
-                      <span className="font-mono text-[#6B6E78]">{githubInfo.apkSizeMb}</span>
-                    )}
-                  </>
-                ) : githubInfo.error ? (
-                  <span className="text-red-700">{githubInfo.error}</span>
-                ) : (
-                  <span className="text-[#5E616B]">
-                    Cada push genera un APK nuevo en Releases → latest listo para instalar desde el móvil.
-                  </span>
-                )}
+              {/* Status or Clear 3-Step Guide */}
+              {githubInfo.apkUrl ? (
+                <div className="rounded-xl bg-emerald-50 border border-emerald-200 p-3 flex flex-wrap items-center justify-between gap-2 text-xs">
+                  <div className="min-w-0">
+                    <div className="font-bold text-emerald-800 truncate">
+                      ✓ {githubInfo.apkName || 'w800i-walkman-launcher.apk'} listo
+                    </div>
+                    <div className="text-[11px] font-mono text-emerald-700 mt-0.5">
+                      Release: {githubInfo.releaseTag || 'latest'}
+                      {githubInfo.apkSizeMb ? ` · ${githubInfo.apkSizeMb}` : ''}
+                    </div>
+                  </div>
+                  {githubInfo.latestRunUrl && (
+                    <a
+                      href={githubInfo.latestRunUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center gap-1 text-[11px] font-mono text-emerald-800 underline shrink-0"
+                    >
+                      Actions {githubInfo.latestRunSha || ''}
+                      <ExternalLink className="w-3 h-3" />
+                    </a>
+                  )}
+                </div>
+              ) : (
+                <div className="rounded-xl bg-white border border-[#EFE2D9] p-3 space-y-2 text-xs">
+                  {githubInfo.error && (
+                    <p className="font-medium text-red-700 leading-snug">{githubInfo.error}</p>
+                  )}
 
-                {githubInfo.latestRunStatus && (
-                  <a
-                    href={githubInfo.latestRunUrl || '#'}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-flex items-center gap-1 font-mono text-[11px] text-[#1A1C22] hover:text-[#E85D1A] underline"
-                  >
-                    Actions: {githubInfo.latestRunStatus} ({githubInfo.latestRunConclusion || 'en curso'})
-                    {githubInfo.latestRunSha ? ` · ${githubInfo.latestRunSha}` : ''}
-                    <ExternalLink className="w-3 h-3" />
-                  </a>
-                )}
-              </div>
+                  {githubInfo.latestRunStatus && (
+                    <a
+                      href={githubInfo.latestRunUrl || '#'}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center gap-1 font-mono text-[11px] text-[#E85D1A] font-semibold underline"
+                    >
+                      Actions: {githubInfo.latestRunStatus} ({githubInfo.latestRunConclusion || 'en curso'})
+                      {githubInfo.latestRunSha ? ` · ${githubInfo.latestRunSha}` : ''}
+                      <ExternalLink className="w-3 h-3" />
+                    </a>
+                  )}
+
+                  <div className="text-[11px] text-[#575A63] leading-relaxed space-y-1 pt-0.5">
+                    <p className="font-bold text-[#1A1C22]">¿Qué pongo aquí?</p>
+                    <p>
+                      1. En tu cuenta de GitHub, copia tu <span className="font-mono font-semibold text-[#1A1C22]">usuario/nombre-del-repo</span> (o la URL completa del repositorio).
+                    </p>
+                    <p>
+                      2. El archivo <span className="font-mono">.github/workflows/build-apk.yml</span> compila y publica el APK en <span className="font-semibold">Releases → latest</span>.
+                    </p>
+                    <p>
+                      3. Cuando esté en verde, pulsa <strong>Comprobar GitHub</strong> y ya podrás descargar o actualizar directo desde aquí o desde el menú del Sony.
+                    </p>
+                  </div>
+                </div>
+              )}
             </div>
 
             {/* Native Android System Permissions */}

@@ -21,6 +21,19 @@ export function normalizeGithubRepo(input: string): string | null {
   return `${owner}/${repo}`;
 }
 
+export function extractGithubOwnerOnly(input: string): string | null {
+  const trimmed = input.trim();
+  if (!trimmed) return null;
+  const cleaned = trimmed
+    .replace(/^https?:\/\/(www\.)?github\.com\//i, '')
+    .replace(/^@/, '')
+    .replace(/^\/+|\/+$/g, '');
+  const parts = cleaned.split('/').filter(Boolean);
+  if (parts.length !== 1) return null;
+  const owner = parts[0].replace(/[^a-zA-Z0-9._-]/g, '');
+  return owner || null;
+}
+
 export function createInitialGithubBuildInfo(repo: string): GithubBuildInfo {
   return {
     repo,
@@ -64,21 +77,74 @@ interface GithubActionsRun {
   updated_at?: string;
 }
 
-export async function fetchGithubBuildInfo(repoInput: string): Promise<GithubBuildInfo> {
-  const normalized = normalizeGithubRepo(repoInput);
-  const nowLabel = new Date().toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' });
+interface GithubUserRepo {
+  full_name?: string;
+  name?: string;
+}
 
-  if (!normalized) {
-    return {
-      ...createInitialGithubBuildInfo(repoInput),
-      error: 'Introduce un repositorio válido (ej. usuario/w800i-launcher).',
-      lastCheckedAt: nowLabel,
-    };
+async function resolveRepoFromOwner(owner: string, headers: Record<string, string>): Promise<string | null> {
+  try {
+    const res = await fetch(`https://api.github.com/users/${owner}/repos?sort=updated&per_page=20`, { headers });
+    if (!res.ok) return null;
+    const repos = (await res.json()) as GithubUserRepo[];
+    if (!Array.isArray(repos) || repos.length === 0) return null;
+
+    const prioritized = [...repos].sort((a, b) => {
+      const score = (name = '') => {
+        const lower = name.toLowerCase();
+        if (lower.includes('w800') || lower.includes('walkman')) return 3;
+        if (lower.includes('launcher') || lower.includes('sony')) return 2;
+        return 1;
+      };
+      return score(b.name) - score(a.name);
+    });
+
+    for (const candidate of prioritized.slice(0, 5)) {
+      if (!candidate.full_name) continue;
+      const relRes = await fetch(`https://api.github.com/repos/${candidate.full_name}/releases?per_page=1`, { headers });
+      if (relRes.ok) {
+        const rels = (await relRes.json()) as GithubReleaseResponse[];
+        if (Array.isArray(rels) && rels.some((r) => r.assets?.some((a) => a.name?.toLowerCase().endsWith('.apk')))) {
+          return candidate.full_name;
+        }
+      }
+    }
+
+    const nameMatch = prioritized.find((r) => {
+      const lower = (r.name || '').toLowerCase();
+      return lower.includes('w800') || lower.includes('walkman') || lower.includes('launcher');
+    });
+    return nameMatch?.full_name || null;
+  } catch {
+    return null;
   }
+}
 
+export async function fetchGithubBuildInfo(repoInput: string): Promise<GithubBuildInfo> {
   const baseHeaders = {
     Accept: 'application/vnd.github+json',
   };
+
+  let normalized = normalizeGithubRepo(repoInput);
+  if (!normalized) {
+    const ownerOnly = extractGithubOwnerOnly(repoInput);
+    if (ownerOnly) {
+      normalized = await resolveRepoFromOwner(ownerOnly, baseHeaders);
+    }
+  }
+
+  const nowLabel = new Date().toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' });
+
+  if (!normalized) {
+    const ownerHint = extractGithubOwnerOnly(repoInput);
+    return {
+      ...createInitialGithubBuildInfo(repoInput),
+      error: ownerHint
+        ? `Escribe el repositorio completo: ${ownerHint}/nombre-de-tu-repo`
+        : 'Escribe usuario/repositorio (ej. tu-usuario/w800i-launcher) o pega la URL de tu repo.',
+      lastCheckedAt: nowLabel,
+    };
+  }
 
   try {
     const [latestRes, runsRes] = await Promise.allSettled([
@@ -93,14 +159,14 @@ export async function fetchGithubBuildInfo(repoInput: string): Promise<GithubBui
       if (latestRes.value.ok) {
         releaseData = (await latestRes.value.json()) as GithubReleaseResponse;
       } else if (latestRes.value.status === 404) {
-        // Could be no "latest" release yet, check list of releases or repo existence
-        const listRes = await fetch(`https://api.github.com/repos/${normalized}/releases?per_page=1`, {
+        const listRes = await fetch(`https://api.github.com/repos/${normalized}/releases?per_page=3`, {
           headers: baseHeaders,
         });
         if (listRes.ok) {
           const list = (await listRes.json()) as GithubReleaseResponse[];
           if (Array.isArray(list) && list.length > 0) {
-            releaseData = list[0];
+            releaseData =
+              list.find((r) => r.assets?.some((a) => a.name?.toLowerCase().endsWith('.apk'))) || list[0];
           }
         } else if (listRes.status === 404) {
           repoNotFound = true;
@@ -125,7 +191,7 @@ export async function fetchGithubBuildInfo(repoInput: string): Promise<GithubBui
     if (repoNotFound && !latestRun) {
       return {
         ...createInitialGithubBuildInfo(normalized),
-        error: `Repositorio "${normalized}" no encontrado o privado.`,
+        error: `Repositorio "${normalized}" no encontrado o es privado.`,
         lastCheckedAt: nowLabel,
       };
     }
@@ -144,13 +210,24 @@ export async function fetchGithubBuildInfo(repoInput: string): Promise<GithubBui
       : latestRun?.head_sha || null;
 
     const hasApk = Boolean(apkAsset?.browser_download_url);
-    const baseVer = APP_VERSION.replace(/-HYPER$/i, '');
+    const baseVer = APP_VERSION.replace(/-APK$/i, '').replace(/-HYPER$/i, '');
     const tagNorm = releaseTag ? releaseTag.replace(/^v/i, '') : '';
     const updateAvailable = Boolean(
       hasApk &&
         ((installedMarker && releaseMarker && installedMarker !== releaseMarker) ||
           (!installedMarker && (!tagNorm || tagNorm !== baseVer)))
     );
+
+    let missingApkMsg: string | null = null;
+    if (!hasApk) {
+      if (latestRun?.status === 'in_progress' || latestRun?.status === 'queued') {
+        missingApkMsg = 'GitHub Actions está compilando el APK ahora mismo. Espera 2 minutos y vuelve a comprobar.';
+      } else if (latestRun?.conclusion === 'failure') {
+        missingApkMsg = 'La última compilación en GitHub Actions falló. Abre el enlace de Actions para ver el detalle.';
+      } else {
+        missingApkMsg = 'Aún no hay ningún APK en Releases. Ejecuta el workflow en la pestaña Actions de GitHub.';
+      }
+    }
 
     return {
       repo: normalized,
@@ -170,7 +247,7 @@ export async function fetchGithubBuildInfo(repoInput: string): Promise<GithubBui
       latestRunUrl: latestRun?.html_url || `https://github.com/${normalized}/actions`,
       latestRunSha: latestRun?.head_sha ? latestRun.head_sha.slice(0, 7) : null,
       updateAvailable,
-      error: !hasApk && !latestRun ? 'Aún no hay compilación APK publicada en Releases.' : null,
+      error: missingApkMsg,
       lastCheckedAt: nowLabel,
     };
   } catch {

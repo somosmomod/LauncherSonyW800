@@ -40,6 +40,8 @@ jobs:
           fi
 
       - name: Instalar dependencias y compilar web
+        env:
+          VITE_GITHUB_REPO: ${{ github.repository }}
         run: |
           npm install --legacy-peer-deps
           npm run build

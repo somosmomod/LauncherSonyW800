@@ -1279,7 +1279,7 @@ export const PhoneScreens: React.FC<PhoneScreenProps> = ({
                   value={repoDraft}
                   onChange={(e) => setRepoDraft(e.target.value)}
                   onBlur={() => onChangeGithubRepo(repoDraft)}
-                  placeholder="usuario/w800i-launcher"
+                  placeholder="usuario/repo o URL GitHub"
                   aria-label="Repositorio GitHub para APK"
                   className="w-full px-2 py-1 rounded bg-black/50 border border-white/15 text-[8.5px] font-mono text-white placeholder:text-white/35 focus:outline-none focus:border-[#FF731D]"
                 />

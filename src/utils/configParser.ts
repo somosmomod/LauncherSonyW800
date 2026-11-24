@@ -142,11 +142,13 @@ export const DEFAULT_MENU_ITEMS: MainMenuSlot[] = [
   { id: 'm-settings', label: 'Centro Config', keyHint: '#', actionType: 'screen', targetScreen: 'settings', iconType: 'tools' },
 ];
 
+const ENV_GITHUB_REPO = (import.meta.env.VITE_GITHUB_REPO || '').trim();
+
 export const DEFAULT_LAUNCHER_CONFIG: LauncherConfig = {
   version: 2,
   ownerName: 'Sony Ericsson',
   carrierText: 'WALKMAN 5G',
-  githubRepo: '',
+  githubRepo: ENV_GITHUB_REPO,
   skin: 'w800i-white',
   customBezelColor: '#D44A0F',
   customFaceColor: '#EEEDE6',

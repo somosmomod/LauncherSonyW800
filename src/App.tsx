@@ -119,6 +119,10 @@ function loadSavedConfig(): LauncherConfig {
         typeof parsed.accentColor === 'string' && parsed.accentColor.trim()
           ? parsed.accentColor
           : DEFAULT_LAUNCHER_CONFIG.accentColor,
+      githubRepo:
+        typeof parsed.githubRepo === 'string' && parsed.githubRepo.trim()
+          ? parsed.githubRepo.trim()
+          : DEFAULT_LAUNCHER_CONFIG.githubRepo,
       customBezelColor:
         typeof parsed.customBezelColor === 'string'
           ? parsed.customBezelColor
@@ -482,6 +486,9 @@ export default function App() {
       }));
       const result = await fetchGithubBuildInfo(target);
       setGithubInfo(result);
+      if (result.repo && normalizeGithubRepo(result.repo)) {
+        setConfig((prev) => (prev.githubRepo === result.repo ? prev : { ...prev, githubRepo: result.repo }));
+      }
       if (result.apkUrl) {
         if (result.updateAvailable) {
           showNotice(`APK ${result.releaseTag || 'nuevo'} listo`);
@@ -1441,9 +1448,9 @@ export default function App() {
       <header
         className={`${
           mobilePanelOpen ? 'block' : 'hidden lg:block'
-        } sticky top-0 z-30 bg-[#F3F2EE]/90 backdrop-blur-md border-b border-[#E2E0D8]`}
+        } sticky top-0 z-30 pt-[env(safe-area-inset-top)] bg-[#F3F2EE]/95 backdrop-blur-md border-b border-[#E2E0D8]`}
       >
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 py-3 flex items-center justify-between gap-8">
+        <div className="max-w-7xl mx-auto px-3.5 sm:px-6 py-2.5 sm:py-3 flex items-center justify-between gap-3 sm:gap-8">
           <a
             href="#top"
             onClick={(e) => {
@@ -1452,7 +1459,7 @@ export default function App() {
               setShadeOpen(false);
               setMobilePanelOpen(false);
             }}
-            className="text-base sm:text-lg font-extrabold tracking-tight text-[#1A1C22] whitespace-nowrap shrink-0"
+            className="text-sm sm:text-lg font-extrabold tracking-tight text-[#1A1C22] truncate min-w-0"
           >
             W800i Walkman Launcher
           </a>
@@ -1507,7 +1514,7 @@ export default function App() {
                   setFocusPhoneOnly((v) => !v);
                 }
               }}
-              className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-[#1A1C22] hover:bg-[#2B2E38] text-white text-xs font-semibold transition-colors whitespace-nowrap shrink-0 cursor-pointer"
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 sm:px-4 sm:py-2 rounded-xl bg-[#1A1C22] hover:bg-[#2B2E38] text-white text-xs font-semibold transition-colors whitespace-nowrap shrink-0 cursor-pointer"
             >
               <span className="lg:hidden inline-flex items-center gap-1.5">
                 {mobilePanelOpen ? <Smartphone className="w-3.5 h-3.5" /> : <SlidersHorizontal className="w-3.5 h-3.5" />}
@@ -1527,7 +1534,7 @@ export default function App() {
         id="top"
         className={`flex-1 min-h-0 w-full mx-auto ${
           mobilePanelOpen
-            ? 'max-w-7xl px-4 sm:px-6 py-5 sm:py-8'
+            ? 'max-w-7xl px-3 sm:px-6 pt-3.5 pb-[max(36px,calc(env(safe-area-inset-bottom)+24px))] sm:py-8 overflow-x-hidden'
             : 'h-full overflow-hidden p-0 lg:h-auto lg:overflow-visible lg:max-w-7xl lg:px-6 lg:py-8'
         }`}
       >
@@ -1677,7 +1684,7 @@ export default function App() {
 
           {/* Native APK Studio & Full Personalization */}
           {!focusPhoneOnly && (
-            <section className={`${mobilePanelOpen ? 'block' : 'hidden lg:block'} min-w-0`}>
+            <section className={`${mobilePanelOpen ? 'block' : 'hidden lg:block'} w-full min-w-0 overflow-hidden`}>
               <ConfigStudio
                 config={config}
                 onUpdateConfig={setConfig}
