@@ -31,19 +31,20 @@ jobs:
       - name: Configurar Android SDK
         uses: android-actions/setup-android@v3
 
-      - name: Aceptar licencias e instalar SDK 36
+      - name: Aceptar licencias Android SDK
         run: |
+          export PATH="$ANDROID_HOME/cmdline-tools/latest/bin:$ANDROID_SDK_ROOT/cmdline-tools/latest/bin:$PATH"
           yes | sdkmanager --licenses >/dev/null 2>&1 || true
-          sdkmanager "platforms;android-36" "build-tools;36.0.0"
+          sdkmanager "platforms;android-36" || true
 
       - name: Instalar dependencias y compilar web
         run: |
-          npm install
+          npm install --legacy-peer-deps
           npm run build
 
       - name: Preparar proyecto Android Nativo con Capacitor
         run: |
-          npm install --no-save @capacitor/core @capacitor/cli @capacitor/android
+          npm install --no-save --legacy-peer-deps @capacitor/core @capacitor/cli @capacitor/android
           if [ ! -d android ]; then
             npx --yes cap add android
           fi
